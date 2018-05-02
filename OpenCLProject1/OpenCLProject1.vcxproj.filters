@@ -22,4 +22,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Intel_OpenCL_Build_Rules Include="VecrorAdd.cl">
+      <Filter>Source Files</Filter>
+    </Intel_OpenCL_Build_Rules>
+  </ItemGroup>
 </Project>
