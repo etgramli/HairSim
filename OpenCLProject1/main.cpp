@@ -25,11 +25,18 @@ int main() {
         if (platformVersion.find("OpenCL 1.") != std::string::npos) {
             // Check if contains device type GPU
             std::vector<cl::Device> devices;
+            // ERROR CHECKING
             current.getDevices(CL_DEVICE_TYPE_GPU, &devices);
             std::cout << "\t" << "Platform (v1.2) " << counter << " has " << devices.size() << " GPU device(s)." << std::endl;
             if (devices.size() > 0) {
                 plat = current;
-                break;
+                std::string info;
+                err = plat.getInfo(CL_PLATFORM_NAME, &info);
+                if (err == CL_SUCCESS) {
+                    std::cout << "Chose platform: " << info << std::endl;
+                }
+                err = CL_SUCCESS;
+                //break;
             }
         }
         ++counter;
@@ -58,6 +65,7 @@ int main() {
     // Create cl::Program
     cl::Program program = cl::Program(context, src);
     // Build program
+    // ERROR CHECKING
     program.build(devices);
     // Create cl::Kernel
     cl::Kernel kernel(program, "simple_add", &err);
@@ -70,6 +78,7 @@ int main() {
     for (int i = 0; i < ARRAYSIZE; ++i) {
         A[i] = B[i] = i;
     }
+    // ERROR CHECKING IN WHOLE FOLLOOWING BLOCK
     cl::Buffer bufA(context, CL_MEM_READ_ONLY, sizeof(int) * ARRAYSIZE);
     cl::Buffer bufB(context, CL_MEM_READ_ONLY, sizeof(int) * ARRAYSIZE);
     cl::Buffer bufC(context, CL_MEM_WRITE_ONLY, sizeof(int) * ARRAYSIZE);
