@@ -2,6 +2,7 @@
 
 
 ## Resourcen:
+- OpenCL Programming Guide: http://cg.inf.elte.hu/~gpgpu/opencl/2014-2015-2/01/OpenCL%20Programming%20Guide.pdf
 
 ### Simulation:
 - https://en.wikipedia.org/wiki/Particle_system
