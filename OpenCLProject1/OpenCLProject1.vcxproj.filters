@@ -23,7 +23,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Intel_OpenCL_Build_Rules Include="VecrorAdd.cl">
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Intel_OpenCL_Build_Rules Include="VectorAdd.cl">
       <Filter>Source Files</Filter>
     </Intel_OpenCL_Build_Rules>
   </ItemGroup>
