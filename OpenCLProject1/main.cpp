@@ -38,66 +38,68 @@ int main() {
         std::string info;
         err = plat.getInfo(CL_PLATFORM_NAME, &info);
         if (err == CL_SUCCESS) {
-            std::cout << "Chose platform: " << info << std::endl << std::endl;
+            std::cout << "Chose platform: " << std::endl
+                << "\t" << plat.getInfo<CL_PLATFORM_VENDOR>() << std::endl
+                << "\t" << info << std::endl
+                << "\t" << plat.getInfo<CL_PLATFORM_VERSION>() << std::endl
+                << "\t" << plat.getInfo<CL_PLATFORM_PROFILE>() << std::endl
+                << "\t" << plat.getInfo<CL_PLATFORM_EXTENSIONS>() << std::endl << std::endl;
         }
     }
     try {
-    // SetUp Context
-    std::cout << "Creating context" << std::endl;
-    cl::Context context = createContext(CL_DEVICE_TYPE_GPU, &plat);
-    std::cout << "Context created" << std::endl;
-
-    // ---- KERNEL SETUP AND LAUNCH ----
-    std::vector<cl::Device> devices = context.getInfo<CL_CONTEXT_DEVICES>();
-    std::cout << "Found " << devices.size() << " devices for context" << std::endl;
-    // Read kernel file to char array
-    std::ifstream in("VectorAdd.cl");
-    std::string source((std::istreambuf_iterator<char>(in)),
-                       std::istreambuf_iterator<char>());
-    // Create cl::Program::Sources
-    cl::Program::Sources src(1, std::make_pair(source.c_str(), strlen(source.c_str())));
-    // Create cl::Program
-    cl::Program program = cl::Program(context, src);
-    // Build program
-    // ERROR CHECKING
-    program.build(devices);
-    // Create cl::Kernel
-    cl::Kernel kernel(program, "simple_add", &err);
-    // Create cl::ConandQueue
-    // If using multiple queues you must synchronize with events
-    cl::CommandQueue queueIO(context, devices[0], 0, &err);     // Queue for IO (reading and writing buffers)
-    cl::CommandQueue queueKernel(context, devices[0], 0, &err); // Queue for Kernels (execution)
+        cl::Context context = createContext(CL_DEVICE_TYPE_GPU, &plat);
+        
+        // ---- KERNEL SETUP AND LAUNCH ----
+        std::vector<cl::Device> devices = context.getInfo<CL_CONTEXT_DEVICES>();
+        std::cout << "Found " << devices.size() << " devices for context" << std::endl;
+        // Read kernel file to char array
+        std::ifstream in("VectorAdd.cl");
+        std::string source((std::istreambuf_iterator<char>(in)),
+                           std::istreambuf_iterator<char>());
+        // Create cl::Program::Sources
+        cl::Program::Sources src(1, std::make_pair(source.c_str(), strlen(source.c_str())));
+        // Create cl::Program
+        cl::Program program = cl::Program(context, src);
+        // Build program
+        // ERROR CHECKING
+        program.build(devices);
+        // Create cl::Kernel
+        cl::Kernel kernel(program, "simple_add", &err);
+        // Create cl::ConandQueue
+        // If using multiple queues you must synchronize with events
+        cl::CommandQueue queueIO(context, devices[0], 0, &err);     // Queue for IO (reading and writing buffers)
+        cl::CommandQueue queueKernel(context, devices[0], 0, &err); // Queue for Kernels (execution)
     
-    // Create cl::Event
-    cl::Event event;
-    // Enqueue Kernel and Buffers
-    for (int i = 0; i < ARRAYSIZE; ++i) {
-        A[i] = B[i] = i;
-    }
-    // ERROR CHECKING IN WHOLE FOLLOOWING BLOCK
-    cl::Buffer bufA(context, CL_MEM_READ_ONLY, sizeof(int) * ARRAYSIZE);
-    cl::Buffer bufB(context, CL_MEM_READ_ONLY, sizeof(int) * ARRAYSIZE);
-    cl::Buffer bufC(context, CL_MEM_WRITE_ONLY, sizeof(int) * ARRAYSIZE);
-    std::cout << "Copying Buffers from Host to Device" << std::endl;
-    cl::Event copyBufferA;
-    cl::Event copyBufferB;
-    std::vector<cl::Event> copyHostToDeviceEvents;
-    queueIO.enqueueWriteBuffer(bufA, CL_TRUE, 0, sizeof(int) * ARRAYSIZE, (void *) A, NULL, &copyBufferA);
-    queueIO.enqueueWriteBuffer(bufB, CL_TRUE, 0, sizeof(int) * ARRAYSIZE, (void *) B, NULL, &copyBufferB);
-    copyHostToDeviceEvents.push_back(copyBufferA);  // PUSHBACK OF EVENTS MUST BE AFTER ENQUEING !!!
-    copyHostToDeviceEvents.push_back(copyBufferB);
-    kernel.setArg(0, bufA);
-    kernel.setArg(1, bufB);
-    kernel.setArg(2, bufC);
-    std::cout << "Enqueue Vecotr add kernel" << std::endl;
-    queueKernel.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(ARRAYSIZE), cl::NullRange, &copyHostToDeviceEvents, &event);
-    // Copy back Buffer and print
-    cl::Event copyBack;
-    std::vector<cl::Event> copyBackWatiEvent;
-    copyBackWatiEvent.push_back(event);
-    queueIO.enqueueReadBuffer(bufC, CL_TRUE, 0, sizeof(int) * ARRAYSIZE, C, &copyBackWatiEvent, &copyBack);
+        // Create cl::Event
+        cl::Event event;
+        // Enqueue Kernel and Buffers
+        for (int i = 0; i < ARRAYSIZE; ++i) {
+            A[i] = B[i] = i;
+        }
+        // ERROR CHECKING IN WHOLE FOLLOOWING BLOCK
+        cl::Buffer bufA(context, CL_MEM_READ_ONLY, sizeof(int) * ARRAYSIZE);
+        cl::Buffer bufB(context, CL_MEM_READ_ONLY, sizeof(int) * ARRAYSIZE);
+        cl::Buffer bufC(context, CL_MEM_WRITE_ONLY, sizeof(int) * ARRAYSIZE);
+        std::cout << "Copying Buffers from Host to Device" << std::endl;
+        cl::Event copyBufferA;
+        cl::Event copyBufferB;
+        std::vector<cl::Event> copyHostToDeviceEvents;
+        queueIO.enqueueWriteBuffer(bufA, CL_TRUE, 0, sizeof(int) * ARRAYSIZE, (void *) A, NULL, &copyBufferA);
+        queueIO.enqueueWriteBuffer(bufB, CL_TRUE, 0, sizeof(int) * ARRAYSIZE, (void *) B, NULL, &copyBufferB);
+        copyHostToDeviceEvents.push_back(copyBufferA);  // PUSHBACK OF EVENTS MUST BE AFTER ENQUEING !!!
+        copyHostToDeviceEvents.push_back(copyBufferB);
+        kernel.setArg(0, bufA);
+        kernel.setArg(1, bufB);
+        kernel.setArg(2, bufC);
+        std::cout << "Enqueue Vecotr add kernel" << std::endl;
+        queueKernel.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(ARRAYSIZE), cl::NullRange, &copyHostToDeviceEvents, &event);
+        // Copy back Buffer and print
+        cl::Event copyBack;
+        std::vector<cl::Event> copyBackWatiEvent;
+        copyBackWatiEvent.push_back(event);
+        queueIO.enqueueReadBuffer(bufC, CL_TRUE, 0, sizeof(int) * ARRAYSIZE, C, &copyBackWatiEvent, &copyBack);
 
-    std::cout << "Is result correct: " << (validate()?"yes":"false") << std::endl << std::endl;
+        std::cout << "Is result correct: " << (validate()?"yes":"false") << std::endl << std::endl;
 
     } catch (std::exception& e) {
         std::cout << e.what() << std::endl;
@@ -113,6 +115,7 @@ cl::Platform getPlatform(cl_device_type type,
     std::vector<cl::Platform> allPlatforms;
     cl::Platform::get(&allPlatforms);
     
+    // Filter platforms for OpenCL version and device type
     cl::Platform plat;
     std::vector<cl::Platform> platformsWtypeANDversion;
     for (cl::Platform &current : allPlatforms) {
@@ -126,6 +129,7 @@ cl::Platform getPlatform(cl_device_type type,
             }
         }
     }
+    // Select remaining platforms for vendor
     for (std::string vendor : vendors) {
         for (cl::Platform platform : platformsWtypeANDversion) {
             if (platform.getInfo<CL_PLATFORM_VENDOR>().find(vendor) != std::string::npos) {
