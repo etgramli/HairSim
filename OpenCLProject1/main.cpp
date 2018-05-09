@@ -9,6 +9,18 @@ int A[ARRAYSIZE];
 int B[ARRAYSIZE];
 int C[ARRAYSIZE];
 
+// Must be in opposite order (here AMD would be selected first, then Nvidia, at last Intel)
+const std::vector<std::string> prefferedOpenClVendors = {
+    "Intel(R) Corporation",
+    "NVIDIA Corporation",
+    "AMD"
+};
+
+// Get a platform with the desired device type, OpenCL major version, vendors in descending order
+cl::Platform getPlatform(cl_device_type type,
+                         unsigned int openclMajorVersion,
+                         std::vector<std::string> vendors);
+
 // Create a context for the specified platform and the stated device type
 cl::Context createContext(cl_device_type type, cl::Platform *platform);
 bool validate();
@@ -16,38 +28,18 @@ bool validate();
 
 int main() {
     cl_int err = CL_SUCCESS;
+
     // ---- SETUP ----
-    std::vector<cl::Platform> platforms;
-    cl::Platform::get(&platforms);
-    cl::Platform plat;
-    // Select OpenCL 1.2 platform
-    int counter = 0;
-    for (cl::Platform &current : platforms) {
-        std::string platformVersion = current.getInfo<CL_PLATFORM_VERSION>();
-        if (platformVersion.find("OpenCL 1.") != std::string::npos) {
-            // Check if contains device type GPU
-            std::vector<cl::Device> devices;
-            // ERROR CHECKING
-            current.getDevices(CL_DEVICE_TYPE_GPU, &devices);
-            std::cout << "\t" << "Platform (v1.2) " << counter << " has " << devices.size() << " GPU device(s)." << std::endl;
-            if (devices.size() > 0) {
-                plat = current;
-                std::string info;
-                err = plat.getInfo(CL_PLATFORM_NAME, &info);
-                if (err == CL_SUCCESS) {
-                    std::cout << "Chose platform: " << info << std::endl;
-                }
-                err = CL_SUCCESS;
-                //break;
-            }
-        }
-        ++counter;
-    }
+    cl::Platform plat = getPlatform(CL_DEVICE_TYPE_GPU, 1, prefferedOpenClVendors);
     if (plat() == 0) {
         std::cerr << "No OpenCL platform of version 1.* found that has GPU devices!" << std::endl;
         return -1;
     } else {
-        std::cout << "Found OpenCL 1.2 Platform with GPU device(s)" << std::endl;
+        std::string info;
+        err = plat.getInfo(CL_PLATFORM_NAME, &info);
+        if (err == CL_SUCCESS) {
+            std::cout << "Chose platform: " << info << std::endl << std::endl;
+        }
     }
     try {
     // SetUp Context
@@ -113,6 +105,37 @@ int main() {
     return 0;
 }
 
+cl::Platform getPlatform(cl_device_type type,
+                         unsigned int openclMajorVersion,
+                         std::vector<std::string> vendors) {
+    const std::string versionString = "OpenCL " + std::to_string(openclMajorVersion) + ".";
+    cl_int err;
+    std::vector<cl::Platform> allPlatforms;
+    cl::Platform::get(&allPlatforms);
+    
+    cl::Platform plat;
+    std::vector<cl::Platform> platformsWtypeANDversion;
+    for (cl::Platform &current : allPlatforms) {
+        std::string platformVersion = current.getInfo<CL_PLATFORM_VERSION>();
+        if (platformVersion.find(versionString) != std::string::npos) {
+            std::vector<cl::Device> devices;
+            // ERROR CHECKING
+            current.getDevices(CL_DEVICE_TYPE_GPU, &devices);
+            if (devices.size() > 0) {
+                platformsWtypeANDversion.push_back(current);
+            }
+        }
+    }
+    for (std::string vendor : vendors) {
+        for (cl::Platform platform : platformsWtypeANDversion) {
+            if (platform.getInfo<CL_PLATFORM_VENDOR>().find(vendor) != std::string::npos) {
+                plat = platform;
+                break;
+            }
+        }
+    }
+    return plat;
+}
 
 cl::Context createContext(cl_device_type type, cl::Platform *platform) {
     cl_context_properties *props = new cl_context_properties[3];
