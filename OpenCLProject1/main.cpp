@@ -4,7 +4,7 @@
 #include <fstream>
 #include <CL/cl.hpp>
 
-const long ARRAYSIZE = 1024*1024;
+const long ARRAYSIZE = 1024 * 1024;
 int A[ARRAYSIZE];
 int B[ARRAYSIZE];
 int C[ARRAYSIZE];
@@ -48,7 +48,7 @@ int main() {
     }
     try {
         cl::Context context = createContext(CL_DEVICE_TYPE_GPU, &plat);
-        
+
         // ---- KERNEL SETUP AND LAUNCH ----
         std::vector<cl::Device> devices = context.getInfo<CL_CONTEXT_DEVICES>();
         std::cout << "Found " << devices.size() << " devices for context" << std::endl;
@@ -69,7 +69,7 @@ int main() {
         // If using multiple queues you must synchronize with events
         cl::CommandQueue queueIO(context, devices[0], 0, &err);     // Queue for IO (reading and writing buffers)
         cl::CommandQueue queueKernel(context, devices[0], 0, &err); // Queue for Kernels (execution)
-    
+
         // Create cl::Event
         cl::Event event;
         // Enqueue Kernel and Buffers
@@ -84,8 +84,8 @@ int main() {
         cl::Event copyBufferA;
         cl::Event copyBufferB;
         std::vector<cl::Event> copyHostToDeviceEvents;
-        queueIO.enqueueWriteBuffer(bufA, CL_TRUE, 0, sizeof(int) * ARRAYSIZE, (void *) A, NULL, &copyBufferA);
-        queueIO.enqueueWriteBuffer(bufB, CL_TRUE, 0, sizeof(int) * ARRAYSIZE, (void *) B, NULL, &copyBufferB);
+        queueIO.enqueueWriteBuffer(bufA, CL_TRUE, 0, sizeof(int) * ARRAYSIZE, (void *)A, NULL, &copyBufferA);
+        queueIO.enqueueWriteBuffer(bufB, CL_TRUE, 0, sizeof(int) * ARRAYSIZE, (void *)B, NULL, &copyBufferB);
         copyHostToDeviceEvents.push_back(copyBufferA);  // PUSHBACK OF EVENTS MUST BE AFTER ENQUEING !!!
         copyHostToDeviceEvents.push_back(copyBufferB);
         kernel.setArg(0, bufA);
@@ -99,7 +99,7 @@ int main() {
         copyBackWatiEvent.push_back(event);
         queueIO.enqueueReadBuffer(bufC, CL_TRUE, 0, sizeof(int) * ARRAYSIZE, C, &copyBackWatiEvent, &copyBack);
 
-        std::cout << "Is result correct: " << (validate()?"yes":"false") << std::endl << std::endl;
+        std::cout << "Is result correct: " << (validate() ? "yes" : "false") << std::endl << std::endl;
 
     } catch (std::exception& e) {
         std::cout << e.what() << std::endl;
@@ -114,7 +114,7 @@ cl::Platform getPlatform(cl_device_type type,
     cl_int err;
     std::vector<cl::Platform> allPlatforms;
     cl::Platform::get(&allPlatforms);
-    
+
     // Filter platforms for OpenCL version and device type
     cl::Platform plat;
     std::vector<cl::Platform> platformsWtypeANDversion;
@@ -144,7 +144,7 @@ cl::Platform getPlatform(cl_device_type type,
 cl::Context createContext(cl_device_type type, cl::Platform *platform) {
     cl_context_properties *props = new cl_context_properties[3];
     props[0] = CL_CONTEXT_PLATFORM;
-    props[1] = (cl_context_properties) (*platform)();
+    props[1] = (cl_context_properties)(*platform)();
     props[2] = 0;
 
     cl_int err;
@@ -153,24 +153,24 @@ cl::Context createContext(cl_device_type type, cl::Platform *platform) {
 
     std::cout << "Create context: ";
     switch (err) {
-    case CL_SUCCESS:
-        std::cout << "CL Success" << std::endl;
-        break;
-    case CL_INVALID_PROPERTY:
-        std::cout << "Invalid property" << std::endl;
-        break;
-    case CL_INVALID_VALUE:
-        std::cout << "Invalid value" << std::endl;
-        break;
-    case CL_INVALID_DEVICE:
-        std::cout << "Invalid device" << std::endl;
-        break;
-    case CL_DEVICE_NOT_AVAILABLE:
-        std::cout << "Device not available" << std::endl;
-        break;
-    case CL_OUT_OF_HOST_MEMORY:
-        std::cout << "Out of host memory" << std::endl;
-        break;
+        case CL_SUCCESS:
+            std::cout << "CL Success" << std::endl;
+            break;
+        case CL_INVALID_PROPERTY:
+            std::cout << "Invalid property" << std::endl;
+            break;
+        case CL_INVALID_VALUE:
+            std::cout << "Invalid value" << std::endl;
+            break;
+        case CL_INVALID_DEVICE:
+            std::cout << "Invalid device" << std::endl;
+            break;
+        case CL_DEVICE_NOT_AVAILABLE:
+            std::cout << "Device not available" << std::endl;
+            break;
+        case CL_OUT_OF_HOST_MEMORY:
+            std::cout << "Out of host memory" << std::endl;
+            break;
 
         default:
             std::cout << "Unknnown error on creating cl::Context!" << std::endl;
