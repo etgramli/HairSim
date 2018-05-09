@@ -21,6 +21,8 @@ No OpenCL extensions are used.
 
 
 ### Rendering:
+- http://www.opengl-tutorial.org (zum selber lernen)
+- nehe.gamedev.net (für Effekte, alt)
 - https://hairrendering.wordpress.com/2010/06/23/marschner-in-nalu-demo/
 - https://hairrendering.wordpress.com/tag/simulation/
 - https://developer.nvidia.com/gpugems/GPUGems/gpugems_pref01.html
