@@ -21,6 +21,9 @@
     <ClCompile Include="Info.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GLwindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
