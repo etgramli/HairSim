@@ -180,15 +180,22 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BodySolver.cpp" />
+    <ClCompile Include="clVectorAdd.cpp" />
     <ClCompile Include="GLwindow.cpp" />
     <ClCompile Include="Info.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Intel_OpenCL_Build_Rules Include="SolvePositionsFromLinksKernel.cl" />
     <Intel_OpenCL_Build_Rules Include="VectorAdd.cl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BodySolver.h" />
+    <ClInclude Include="clVectorAdd.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
