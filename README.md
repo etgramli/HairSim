@@ -4,6 +4,10 @@ The physics is implemented in OpenCL and the rendering is done with OpenGL.
 
 ## Implementation
 
+### Physics simulation
+The hairs will be simulated as dots connected with links. The initial state of the vertices can be easily be created as a 3d array of vertices with each vertex having only two links.
+![Initial state of the vertices]<img src="doc/pics/Mesh.svg">
+
 ### OpenCL
 For the physics part a ICD is requred that supports a graphics card.
 One graphics card is requred to run the program, but the manufacturer is not important.
