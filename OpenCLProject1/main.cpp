@@ -24,6 +24,8 @@ cl::Platform getPlatform(cl_device_type type,
 // Create a context for the specified platform and the stated device type
 cl::Context createContext(cl_device_type type, cl::Platform *platform);
 bool validate();
+void printStatus(char * op, cl_int error);
+char * checkError(l_int error);
 
 
 int main() {
@@ -61,14 +63,17 @@ int main() {
         // Create cl::Program
         cl::Program program = cl::Program(context, src);
         // Build program
-        // ERROR CHECKING
-        program.build(devices);
+        err = program.build(devices);
+		printStatus("Build program:", err);
         // Create cl::Kernel
         cl::Kernel kernel(program, "simple_add", &err);
+		printStatus("Create kernel:", err);
         // Create cl::ConandQueue
         // If using multiple queues you must synchronize with events
         cl::CommandQueue queueIO(context, devices[0], 0, &err);     // Queue for IO (reading and writing buffers)
+		printStatus("Create IO queue:", err);
         cl::CommandQueue queueKernel(context, devices[0], 0, &err); // Queue for Kernels (execution)
+		printStatus("Create kernel queue:", err);
 
         // Create cl::Event
         cl::Event event;
@@ -76,28 +81,37 @@ int main() {
         for (int i = 0; i < ARRAYSIZE; ++i) {
             A[i] = B[i] = i;
         }
-        // ERROR CHECKING IN WHOLE FOLLOOWING BLOCK
-        cl::Buffer bufA(context, CL_MEM_READ_ONLY, sizeof(int) * ARRAYSIZE);
-        cl::Buffer bufB(context, CL_MEM_READ_ONLY, sizeof(int) * ARRAYSIZE);
-        cl::Buffer bufC(context, CL_MEM_WRITE_ONLY, sizeof(int) * ARRAYSIZE);
+        cl::Buffer bufA(context, CL_MEM_READ_ONLY, sizeof(int) * ARRAYSIZE, NULL, &err);
+		printStatus("Create buffer A:", err);
+        cl::Buffer bufB(context, CL_MEM_READ_ONLY, sizeof(int) * ARRAYSIZE, NULL, &err);
+		printStatus("Create buffer B:", err);
+        cl::Buffer bufC(context, CL_MEM_WRITE_ONLY, sizeof(int) * ARRAYSIZE, NULL, &err);
+		printStatus("Create buffer C:", err);
         std::cout << "Copying Buffers from Host to Device" << std::endl;
         cl::Event copyBufferA;
         cl::Event copyBufferB;
         std::vector<cl::Event> copyHostToDeviceEvents;
-        queueIO.enqueueWriteBuffer(bufA, CL_TRUE, 0, sizeof(int) * ARRAYSIZE, (void *)A, NULL, &copyBufferA);
-        queueIO.enqueueWriteBuffer(bufB, CL_TRUE, 0, sizeof(int) * ARRAYSIZE, (void *)B, NULL, &copyBufferB);
+        err = queueIO.enqueueWriteBuffer(bufA, CL_TRUE, 0, sizeof(int) * ARRAYSIZE, (void *)A, NULL, &copyBufferA);
+		printStatus("Copy buffer A:", err);
+        err = queueIO.enqueueWriteBuffer(bufB, CL_TRUE, 0, sizeof(int) * ARRAYSIZE, (void *)B, NULL, &copyBufferB);
+		printStatus("Copy buffer B:", err);
         copyHostToDeviceEvents.push_back(copyBufferA);  // PUSHBACK OF EVENTS MUST BE AFTER ENQUEING !!!
         copyHostToDeviceEvents.push_back(copyBufferB);
-        kernel.setArg(0, bufA);
-        kernel.setArg(1, bufB);
-        kernel.setArg(2, bufC);
-        std::cout << "Enqueue Vecotr add kernel" << std::endl;
-        queueKernel.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(ARRAYSIZE), cl::NullRange, &copyHostToDeviceEvents, &event);
+        err = kernel.setArg(0, bufA);
+		printStatus("Set kernel argument buffer A:", err);
+        err = kernel.setArg(1, bufB);
+		printStatus("Set kernel argument buffer B:", err);
+        err = kernel.setArg(2, bufC);
+		printStatus("Set kernel argument buffer C:", err);
+        std::cout << "Enqueue Vector add kernel" << std::endl;
+        err = queueKernel.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(ARRAYSIZE), cl::NullRange, &copyHostToDeviceEvents, &event);
+		printStatus("Enqueue Vector add kernel:", err);
         // Copy back Buffer and print
         cl::Event copyBack;
-        std::vector<cl::Event> copyBackWatiEvent;
+        std::vector<cl::Event> copyBackWaitEvent;
         copyBackWatiEvent.push_back(event);
-        queueIO.enqueueReadBuffer(bufC, CL_TRUE, 0, sizeof(int) * ARRAYSIZE, C, &copyBackWatiEvent, &copyBack);
+        queueIO.enqueueReadBuffer(bufC, CL_TRUE, 0, sizeof(int) * ARRAYSIZE, C, &copyBackWaitEvent, &copyBack);
+		printStatus("Copy back buffer C:", err);
 
         std::cout << "Is result correct: " << (validate() ? "yes" : "false") << std::endl << std::endl;
 
@@ -151,31 +165,7 @@ cl::Context createContext(cl_device_type type, cl::Platform *platform) {
     cl::Context context;
     context = clCreateContextFromType(props, type, NULL, NULL, &err);
 
-    std::cout << "Create context: ";
-    switch (err) {
-        case CL_SUCCESS:
-            std::cout << "CL Success" << std::endl;
-            break;
-        case CL_INVALID_PROPERTY:
-            std::cout << "Invalid property" << std::endl;
-            break;
-        case CL_INVALID_VALUE:
-            std::cout << "Invalid value" << std::endl;
-            break;
-        case CL_INVALID_DEVICE:
-            std::cout << "Invalid device" << std::endl;
-            break;
-        case CL_DEVICE_NOT_AVAILABLE:
-            std::cout << "Device not available" << std::endl;
-            break;
-        case CL_OUT_OF_HOST_MEMORY:
-            std::cout << "Out of host memory" << std::endl;
-            break;
-
-        default:
-            std::cout << "Unknnown error on creating cl::Context!" << std::endl;
-            break;
-    }
+	printStatus("Create context:", err);
 
     return context;
 }
@@ -189,4 +179,121 @@ bool validate() {
         }
     }
     return true;
+}
+
+void printStatus(char * op, cl_int error)
+{
+	if (error == 0)
+	{
+		printf("%s successful\n", op);
+	}
+	else
+	{
+		printf("%s failed (%s)\n", op, checkError(error));
+	}
+}
+
+char * checkError(cl_int error)
+{
+	switch (error)
+	{
+	case -1:
+		return "CL_DEVICE_NOT_FOUND";
+	case -2:
+		return "CL_DEVICE_NOT_AVAILABLE";
+	case -3:
+		return "CL_COMPILER_NOT_AVAILABLE";
+	case -4:
+		return "CL_MEM_OBJECT_ALLOCATION_FAILURE";
+	case -5:
+		return "CL_OUT_OF_RESOURCES";
+	case -6:
+		return "CL_OUT_OF_HOST_MEMORY";
+	case -7:
+		return "CL_PROFILING_INFO_NOT_AVAILABLE";
+	case -8:
+		return "CL_MEM_COPY_OVERLAP";
+	case -9:
+		return "CL_IMAGE_FORMAT_MISMATCH";
+	case -10:
+		return "CL_IMAGE_FORMAT_NOT_SUPPORTED";
+	case -11:
+		return "CL_BUILD_PROGRAM_FAILURE";
+	case -12:
+		return "CL_MAP_FAILURE";
+	case -13:
+		return "CL_MISALIGNED_SUB_BUFFER_OFFSET";
+	case -14:
+		return "CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST";
+	case -30:
+		return "CL_INVALID_VALUE";
+	case -31:
+		return "CL_INVALID_DEVICE_TYPE";
+	case -32:
+		return "CL_INVALID_PLATFORM";
+	case -33:
+		return "CL_INVALID_DEVICE";
+	case -34:
+		return "CL_INVALID_CONTEXT";
+	case -35:
+		return "CL_INVALID_QUEUE_PROPERTIES";
+	case -36:
+		return "CL_INVALID_COMMAND_QUEUE";
+	case -37:
+		return "CL_INVALID_HOST_PTR";
+	case -38:
+		return "CL_INVALID_MEM_OBJECT";
+	case -39:
+		return "CL_INVALID_IMAGE_FORMAT_DESCRIPTOR";
+	case -40:
+		return "CL_INVALID_IMAGE_SIZE";
+	case -41:
+		return "CL_INVALID_SAMPLER";
+	case -42:
+		return "CL_INVALID_BINARY";
+	case -43:
+		return "CL_INVALID_BUILD_OPTIONS";
+	case -44:
+		return "CL_INVALID_PROGRAM";
+	case -45:
+		return "CL_INVALID_PROGRAM_EXECUTABLE";
+	case -46:
+		return "CL_INVALID_KERNEL_NAME";
+	case -47:
+		return "CL_INVALID_KERNEL_DEFINITION";
+	case -48:
+		return "CL_INVALID_KERNEL";
+	case -49:
+		return "CL_INVALID_ARG_INDEX";
+	case -50:
+		return "CL_INVALID_ARG_VALUE";
+	case -51:
+		return "CL_INVALID_ARG_SIZE";
+	case -52:
+		return "CL_INVALID_KERNEL_ARGS";
+	case -53:
+		return "CL_INVALID_WORK_DIMENSION";
+	case -54:
+		return "CL_INVALID_WORK_GROUP_SIZE";
+	case -55:
+		return "CL_INVALID_WORK_ITEM_SIZE";
+	case -56:
+		return "CL_INVALID_GLOBAL_OFFSET";
+	case -57:
+		return "CL_INVALID_EVENT_WAIT_LIST";
+	case -58:
+		return "CL_INVALID_EVENT";
+	case -59:
+		return "CL_INVALID_OPERATION";
+	case -60:
+		return "CL_INVALID_GL_OBJECT";
+	case -61:
+		return "CL_INVALID_BUFFER_SIZE";
+	case -62:
+		return "CL_INVALID_MIP_LEVEL";
+	case -63:
+		return "CL_INVALID_GLOBAL_WORK_SIZE";
+	default:
+		return "Unknown error";
+	}
 }
