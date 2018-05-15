@@ -3,7 +3,8 @@
 #include <fstream>
 #include <CL/cl.hpp>
 
-#include  "clVectorAdd.h"
+#include "clVectorAdd.h"
+#include "clHelper.h"
 
 /*
 typedef struct {
@@ -69,13 +70,14 @@ int main() {
         // ---- KERNEL SETUP AND LAUNCH ----
         std::vector<cl::Device> devices = context.getInfo<CL_CONTEXT_DEVICES>();
         std::cout << "Found " << devices.size() << " devices for context" << std::endl;
+
         // Create cl::ConandQueue
         cl::CommandQueue queueKernel(context, devices[0], 0, &err);
+        printStatus("Create kernel queue:", err);
 
         clVectorAdd *vAdd = new clVectorAdd(&context, &queueKernel);
         vAdd->enqueue();
 
-        // Enqueue Kernel and Buffers
         std::cout << "Is result correct: " << (vAdd->validate() ? "yes" : "false") << std::endl << std::endl;
 
     } catch (std::exception& e) {
@@ -129,31 +131,7 @@ cl::Context createContext(cl_device_type type, cl::Platform *platform) {
     cl::Context context;
     context = clCreateContextFromType(props, type, NULL, NULL, &err);
 
-    std::cout << "Create context: ";
-    switch (err) {
-        case CL_SUCCESS:
-            std::cout << "CL Success" << std::endl;
-            break;
-        case CL_INVALID_PROPERTY:
-            std::cout << "Invalid property" << std::endl;
-            break;
-        case CL_INVALID_VALUE:
-            std::cout << "Invalid value" << std::endl;
-            break;
-        case CL_INVALID_DEVICE:
-            std::cout << "Invalid device" << std::endl;
-            break;
-        case CL_DEVICE_NOT_AVAILABLE:
-            std::cout << "Device not available" << std::endl;
-            break;
-        case CL_OUT_OF_HOST_MEMORY:
-            std::cout << "Out of host memory" << std::endl;
-            break;
-
-        default:
-            std::cout << "Unknnown error on creating cl::Context!" << std::endl;
-            break;
-    }
+	printStatus("Create context:", err);
 
     return context;
 }

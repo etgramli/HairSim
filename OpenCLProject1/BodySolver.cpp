@@ -1,7 +1,7 @@
 #include "BodySolver.h"
 
 
-BodySolver::BodySolver(cl::CommandQueue queue)
+BodySolver::BodySolver(cl::CommandQueue *queue)
 {
     this->queue = queue;
 
@@ -17,7 +17,6 @@ void BodySolver::solveLinksForPosition(int startLink,
                                        int numLinks,
                                        float kst,
                                        float ti) {
-    cl_int ciErrNum;
     /*
     ciErrNum = clSetKernelArg(
         solvePositionsFromLinksKernel,

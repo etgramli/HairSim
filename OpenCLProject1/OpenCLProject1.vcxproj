@@ -181,6 +181,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BodySolver.cpp" />
+    <ClCompile Include="clHelper.cpp" />
     <ClCompile Include="clVectorAdd.cpp" />
     <ClCompile Include="GLwindow.cpp" />
     <ClCompile Include="Info.cpp" />
@@ -195,6 +196,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BodySolver.h" />
+    <ClInclude Include="clHelper.h" />
     <ClInclude Include="clVectorAdd.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -8,7 +8,7 @@ class BodySolver
     std::string kernelName = "SolvePositionsFromLinksKernel";
 
 public:
-    BodySolver(cl::CommandQueue queue);
+    BodySolver(cl::CommandQueue *queue);
     ~BodySolver();
 
     void solveLinksForPosition(int startLink, 
