@@ -55,5 +55,8 @@
     <ClInclude Include="clHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GLwindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
