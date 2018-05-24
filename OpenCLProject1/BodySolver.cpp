@@ -1,11 +1,32 @@
 #include "BodySolver.h"
 
+#include "clHelper.h"
+#include <fstream>
 
 BodySolver::BodySolver(cl::CommandQueue *queue)
 {
     this->queue = queue;
 
+    cl_int err;
     // ToDo: Create Program and Kernel
+    // Read kernel file to char array
+    std::ifstream in(kernelFileName);
+    std::string source((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+    // Create cl::Program::Sources
+    cl::Program::Sources src(1, std::make_pair(source.c_str(), strlen(source.c_str())));
+    // Create cl::Program
+    program = cl::Program(*context, src);
+    // Build program
+    std::vector<cl::Device> devices = (*context).getInfo<CL_CONTEXT_DEVICES>(&err);
+    printStatus("Context.getInfo<CL_CONTEXT_DEVICES>:", err);
+
+    err = CL_SUCCESS;
+    err = program.build(devices);
+    printStatus("Build program:", err);
+
+    // Create cl::Kernel
+    this->kernel = cl::Kernel(program, this->kernelName.c_str(), &err);
+    printStatus("Create kernel:", err);
 }
 
 
@@ -17,27 +38,16 @@ void BodySolver::solveLinksForPosition(int startLink,
                                        int numLinks,
                                        float kst,
                                        float ti) {
+    cl_int ciErrNum = CL_SUCCESS, err = CL_SUCCESS;
+    err = kernel.setArg(0, startLink);
+    err |= kernel.setArg(1, numLinks);
+    err |= kernel.setArg(2, kst);
+    err |= kernel.setArg(3, ti);
+
+    // Create Buffers
+    // Copy Buffers
+    // Set Kernel Args
     /*
-    ciErrNum = clSetKernelArg(
-        solvePositionsFromLinksKernel,
-        0, 
-        sizeof(int), 
-        &startLink);
-    ciErrNum = clSetKernelArg(
-        solvePositionsFromLinksKernel,
-        1, 
-        sizeof(int), 
-        &numLinks);
-    ciErrNum = clSetKernelArg(
-        solvePositionsFromLinksKernel,
-        2, 
-        sizeof(float), 
-        &kst);
-    ciErrNum = clSetKernelArg(
-        solvePositionsFromLinksKernel,
-        3, 
-        sizeof(float), 
-        &ti);
     ciErrNum = clSetKernelArg(
         solvePositionsFromLinksKernel,
         4, 
@@ -63,6 +73,9 @@ void BodySolver::solveLinksForPosition(int startLink,
         8, 
         sizeof(cl_mem), 
         &m_vertexData.m_clVertexPosition.m_buffer);
+
+    printStatus("Setting arguments for BodySolver kernel: ", err);
+
     size_t  numWorkItems = workGroupSize*
         ((numLinks + (workGroupSize-1)) / workGroupSize);
     ciErrNum = clEnqueueNDRangeKernel(
@@ -75,6 +88,5 @@ void BodySolver::solveLinksForPosition(int startLink,
     if( ciErrNum!= CL_SUCCESS) {
         btAssert( 0 &&
             "enqueueNDRangeKernel(solvePositionsFromLinksKernel)");
-    }
-    */
+    }*/
 } // solveLinksForPosition

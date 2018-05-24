@@ -12,8 +12,8 @@ typedef struct {
 } vector3d;
 
 typedef struct {
-    cl_int3 coordinate;
-    cl_int3 color;
+    cl_float4 coordinate;
+    cl_uint3 color;
     cl_uint mass;
     cl_bool isStatic;
 } vertex;
