@@ -8,7 +8,8 @@ BodySolver::BodySolver(cl::CommandQueue *queue)
     this->queue = queue;
 
     cl_int err;
-    // ToDo: Create Program and Kernel
+    // ToDo: Buffers
+
     // Read kernel file to char array
     std::ifstream in(kernelFileName);
     std::string source((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());

@@ -182,8 +182,11 @@
     <ClCompile Include="clHelper.cpp" />
     <ClCompile Include="clVectorAdd.cpp" />
     <ClCompile Include="GLwindow.cpp" />
+    <ClCompile Include="HairPiece.cpp" />
     <ClCompile Include="Info.cpp" />
+    <ClCompile Include="Link.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Node.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Intel_OpenCL_Build_Rules Include="SolvePositionsFromLinksKernel.cl" />
@@ -196,6 +199,9 @@
     <ClInclude Include="BodySolver.h" />
     <ClInclude Include="clHelper.h" />
     <ClInclude Include="clVectorAdd.h" />
+    <ClInclude Include="HairPiece.h" />
+    <ClInclude Include="Link.h" />
+    <ClInclude Include="Node.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>
