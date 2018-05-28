@@ -32,12 +32,13 @@
     <ProjectGuid>{E99F5DFC-113A-4BC3-8253-90A6AC0C9A9D}</ProjectGuid>
     <RootNamespace>OpenCLProject1</RootNamespace>
     <ProjectName>HairSim</ProjectName>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -181,8 +182,11 @@
     <ClCompile Include="clHelper.cpp" />
     <ClCompile Include="clVectorAdd.cpp" />
     <ClCompile Include="GLwindow.cpp" />
+    <ClCompile Include="HairPiece.cpp" />
     <ClCompile Include="Info.cpp" />
+    <ClCompile Include="Link.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Node.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Intel_OpenCL_Build_Rules Include="SolvePositionsFromLinksKernel.cl" />
@@ -196,6 +200,9 @@
     <ClInclude Include="clHelper.h" />
     <ClInclude Include="clVectorAdd.h" />
     <ClInclude Include="GLwindow.h" />
+    <ClInclude Include="HairPiece.h" />
+    <ClInclude Include="Link.h" />
+    <ClInclude Include="Node.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

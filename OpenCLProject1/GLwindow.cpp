@@ -2,6 +2,7 @@
 
 GLuint g_vertexArrayId = 0;
 GLuint g_shaderId = 0;
+const int n = 40;
 
 GLuint loadShaders(const char * vertex_file_path, const char * fragment_file_path)
 {
@@ -100,12 +101,33 @@ GLuint loadShaders(const char * vertex_file_path, const char * fragment_file_pat
 
 std::vector<GLfloat> generateMesh()
 {
-	GLsizei const size = 27;
+	GLsizei const size = n * n * 9 + 18;
+	float s = 4.0f / (float)n;
 
-	GLfloat const vertices[size] = {
+	GLfloat vertices[size];/* = {
 		0.0f, 1.0f, 0.0f,
-		-1.0f, -1.0f, 0.0f,
-		1.0f, -1.0f, 0.0f,
+		-0.03f, -1.0f, 0.0f,
+		0.03f, -1.0f, 0.0f,
+
+		0.0f, 3.0f, 0.0f,
+		0.0f, 1.0f, -0.03f,
+		0.0f, 1.0f, 0.03f,
+
+		0.0f, 3.0f, 0.0f,
+		-0.03f, 1.0f, 0.0f,
+		0.03f, 1.0f, 0.0f,
+
+		0.0f, 1.0f, 0.0f,
+		0.0f, -1.0f, -0.03f,
+		0.0f, -1.0f, 0.03f,
+
+		1.0f, 1.0f, 1.0f,
+		0.97f, -1.0f, 1.0f,
+		1.03f, -1.0f, 1.0f,
+
+		1.0f, 1.0f, 1.0f,
+		1.0f, -1.0f, 0.97f,
+		1.0f, -1.0f, 1.03f,
 
 		-2.0f, -1.0f, -2.0f,
 		-2.0f, -1.0f, 2.0f,
@@ -114,7 +136,29 @@ std::vector<GLfloat> generateMesh()
 		-2.0f, -1.0f, -2.0f,
 		2.0f, -1.0f, 2.0f,
 		2.0f, -1.0f, -2.0f
-	};
+	};*/
+	float j = 0;
+	float k = 0;
+	for (int i = 0; i < size - 18; i += 9) {
+		if (i % n == 0 && i != 0) {
+			j += s;
+			k = 0;
+		}
+
+		vertices[i] = -2.0f + k, vertices[i + 1] = 1.0f, vertices[i + 2] = -2.0f + j,
+		vertices[i + 3] = -2.03f + k, vertices[i + 4] = -1.0f, vertices[i + 5] = -2.0f + j,
+		vertices[i + 6] = -1.97f + k, vertices[i + 7] = -1.0f, vertices[i + 8] = -2.0f + j;
+
+		k += s;
+	}
+
+	vertices[size - 18] = -2.0f; vertices[size - 17] = -1.0f, vertices[size - 16] = -2.0f,
+	vertices[size - 15] = -2.0f, vertices[size - 14] = -1.0f, vertices[size - 13] = 2.0f,
+	vertices[size - 12] = 2.0f, vertices[size - 11] = -1.0f, vertices[size - 10] = 2.0f,
+
+	vertices[size - 9] = -2.0f, vertices[size - 8] = -1.0f, vertices[size - 7] = -2.0f,
+	vertices[size - 6] = 2.0f, vertices[size - 5] = -1.0f, vertices[size - 4] = 2.0f,
+	vertices[size - 3] = 2.0f, vertices[size - 2] = -1.0f, vertices[size - 1] = -2.0f;
 
 	std::vector<GLfloat> mesh;
 
@@ -122,27 +166,24 @@ std::vector<GLfloat> generateMesh()
 	{
 		mesh.push_back(vertices[index]);
 	}
-
+	
 	return mesh;
 }
 
 std::vector<GLfloat> generateColorData()
 {
-	GLsizei const size = 27;
+	GLsizei const size = n * n * 9 + 18;
 
-	GLfloat const raw[size] = {
-		0.0f, 1.0f, 0.0f,
-		1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f,
-
-		0.3f, 0.3f, 0.3f,
-		0.3f, 0.3f, 0.3f,
-		0.3f, 0.3f, 0.3f,
-
-		0.3f, 0.3f, 0.3f,
-		0.3f, 0.3f, 0.3f,
-		0.3f, 0.3f, 0.3f
-	};
+	GLfloat raw[size];
+	for (int i = 0; i < size; i += 3) {
+		if (i < size - 18) {
+			raw[i] = 0.98f, raw[i + 1] = 0.941f, raw[i + 2] = 0.745f;
+		}
+		else {
+			raw[i] = 0.98f, raw[i + 1] = 0.824f, raw[i + 2] = 0.745f;
+		}
+		
+	}
 
 	std::vector<GLfloat> colors;
 
@@ -206,105 +247,9 @@ void drawOpenGL(Window const * const _window, clock_t const & _lastInterval)
 
 	glBindVertexArray(g_vertexArrayId);
 
-	glDrawArrays(GL_TRIANGLES, 0, 9);
+	glDrawArrays(GL_TRIANGLES, 0, n * n * 3 + 6);//number of vertices
 
 	glBindVertexArray(0);
 
 	glUseProgram(0);
 }
-
-//int main(int _argc, char ** _argv)
-//{
-//	Window * window = Window::getInstance();
-//
-//	window->open("Sample", 800, 600);
-//	window->setEyePoint(Vector4(0.0f, 0.0f, 500.0f, 1.0f));
-//	window->setActive();
-//
-//	initializeOpenGL();
-//
-//	clock_t lastInterval = clock();
-//
-//	while (window->isOpen())
-//	{
-//		window->setActive();
-//
-//		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//
-//		drawOpenGL(window, lastInterval);
-//
-//		lastInterval = clock();
-//
-//		window->swapBuffer();
-//	}
-//}
-
-//#include <stdio.h>
-//#define GLEW_STATIC
-//#include <GL\glew.h>
-//// Include GLFW
-//#include <GLFW/glfw3.h>
-//GLFWwindow* window;
-//
-//#pragma comment (lib, "glew32s.lib")
-//#pragma comment (lib, "glfw3.lib")
-//#pragma comment (lib, "OpenGL32.lib")
-//
-//int drawWindow() {
-//    // Initialise GLFW
-//    if( !glfwInit() ) {
-//        fprintf( stderr, "Failed to initialize GLFW\n" );
-//        getchar();
-//        return -1;
-//    }
-//
-//    glfwWindowHint(GLFW_SAMPLES, 4);
-//    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-//    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-//    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
-//    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-//
-//    // Open a window and create its OpenGL context
-//    window = glfwCreateWindow( 1024, 768, "Tutorial 01", NULL, NULL);
-//    if( window == NULL ){
-//        fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
-//        getchar();
-//        glfwTerminate();
-//        return -1;
-//    }
-//    glfwMakeContextCurrent(window);
-//
-//    // Initialize GLEW
-//    if (glewInit() != GLEW_OK) {
-//        fprintf(stderr, "Failed to initialize GLEW\n");
-//        getchar();
-//        glfwTerminate();
-//        return -1;
-//    }
-//
-//    // Ensure we can capture the escape key being pressed below
-//    glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-//
-//    // Dark blue background
-//    glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
-//
-//    do{
-//        // Clear the screen. It's not mentioned before Tutorial 02, but it can cause flickering, so it's there nonetheless.
-//        glClear( GL_COLOR_BUFFER_BIT );
-//
-//        // Draw nothing, see you in tutorial 2 !
-//
-//
-//        // Swap buffers
-//        glfwSwapBuffers(window);
-//        glfwPollEvents();
-//
-//    } // Check if the ESC key was pressed or the window was closed
-//    while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
-//        glfwWindowShouldClose(window) == 0 );
-//
-//    // Close OpenGL window and terminate GLFW
-//    glfwTerminate();
-//    
-//    return 0;
-//}
