@@ -4,6 +4,7 @@
 #include <sstream>
 #include <vector>
 #include <time.h>
+#include <cmath>
 
 void initializeOpenGL();
 void drawOpenGL(Window const * const _window, clock_t const & _lastInterval);

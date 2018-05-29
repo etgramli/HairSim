@@ -3,6 +3,7 @@
 GLuint g_vertexArrayId = 0;
 GLuint g_shaderId = 0;
 const int n = 40;
+const int l = 4;
 
 GLuint loadShaders(const char * vertex_file_path, const char * fragment_file_path)
 {
@@ -101,58 +102,37 @@ GLuint loadShaders(const char * vertex_file_path, const char * fragment_file_pat
 
 std::vector<GLfloat> generateMesh()
 {
-	GLsizei const size = n * n * 9 + 18;
+	GLsizei const size = n * n * 9 * l * 2 + 18;
 	float s = 4.0f / (float)n;
 
-	GLfloat vertices[size];/* = {
-		0.0f, 1.0f, 0.0f,
-		-0.03f, -1.0f, 0.0f,
-		0.03f, -1.0f, 0.0f,
-
-		0.0f, 3.0f, 0.0f,
-		0.0f, 1.0f, -0.03f,
-		0.0f, 1.0f, 0.03f,
-
-		0.0f, 3.0f, 0.0f,
-		-0.03f, 1.0f, 0.0f,
-		0.03f, 1.0f, 0.0f,
-
-		0.0f, 1.0f, 0.0f,
-		0.0f, -1.0f, -0.03f,
-		0.0f, -1.0f, 0.03f,
-
-		1.0f, 1.0f, 1.0f,
-		0.97f, -1.0f, 1.0f,
-		1.03f, -1.0f, 1.0f,
-
-		1.0f, 1.0f, 1.0f,
-		1.0f, -1.0f, 0.97f,
-		1.0f, -1.0f, 1.03f,
-
-		-2.0f, -1.0f, -2.0f,
-		-2.0f, -1.0f, 2.0f,
-		2.0f, -1.0f, 2.0f,
-
-		-2.0f, -1.0f, -2.0f,
-		2.0f, -1.0f, 2.0f,
-		2.0f, -1.0f, -2.0f
-	};*/
+	GLfloat vertices[size];
 	float j = 0;
 	float k = 0;
-	for (int i = 0; i < size - 18; i += 9) {
-		if (i % n == 0 && i != 0) {
+	for (int i = 0; i < size - 18; i += 18 * l) {
+		if (i % (n * l * 2) == 0 && i != 0) {
 			j += s;
 			k = 0;
 		}
 
-		vertices[i] = -2.0f + k, vertices[i + 1] = 1.0f, vertices[i + 2] = -2.0f + j,
-		vertices[i + 3] = -2.03f + k, vertices[i + 4] = -1.0f, vertices[i + 5] = -2.0f + j,
-		vertices[i + 6] = -1.97f + k, vertices[i + 7] = -1.0f, vertices[i + 8] = -2.0f + j;
+		for (int m = 0; m < l; m++) {
+			int idx = i + m * 18;
+			vertices[idx] = -2.0f + k,                          vertices[idx + 1] = 0.0f + m * 0.5f,  vertices[idx + 2] = -2.0f + j,
+			vertices[idx + 3] = -2.0f - 0.03 * pow(0.8, m) + k, vertices[idx + 4] = -1.0f + m * 0.5f, vertices[idx + 5] = -2.0f + j,
+			vertices[idx + 6] = -2.0f + 0.03 * pow(0.2, m) + k, vertices[idx + 7] = -1.0f + m * 0.5f, vertices[idx + 8] = -2.0f + j,
+
+			vertices[idx + 9] = -2.0f + k,  vertices[idx + 10] = 0.0f + m * 0.5f,  vertices[idx + 11] = -2.0f + j,
+			vertices[idx + 12] = -2.0f + k, vertices[idx + 13] = -1.0f + m * 0.5f, vertices[idx + 14] = -2.0f - 0.03 * pow(0.8, m) + j,
+			vertices[idx + 15] = -2.0f + k, vertices[idx + 16] = -1.0f + m * 0.5f, vertices[idx + 17] = -2.0f + 0.03 * pow(0.2, m) + j;
+
+			//vertices[idx + 9] = -2.0f + k, vertices[idx + 10] = 0.0f + m, vertices[idx + 11] = -2.0f + j,
+			//vertices[idx + 12] = -2.0f + k, vertices[idx + 13] = -1.0f + m, vertices[idx + 14] = -2.003f + j,
+			//vertices[idx + 15] = -2.0f + k, vertices[idx + 16] = -1.0f + m, vertices[idx + 17] = -1.997f + j;
+		}
 
 		k += s;
 	}
 
-	vertices[size - 18] = -2.0f; vertices[size - 17] = -1.0f, vertices[size - 16] = -2.0f,
+	vertices[size - 18] = -2.0f, vertices[size - 17] = -1.0f, vertices[size - 16] = -2.0f,
 	vertices[size - 15] = -2.0f, vertices[size - 14] = -1.0f, vertices[size - 13] = 2.0f,
 	vertices[size - 12] = 2.0f, vertices[size - 11] = -1.0f, vertices[size - 10] = 2.0f,
 
@@ -172,7 +152,7 @@ std::vector<GLfloat> generateMesh()
 
 std::vector<GLfloat> generateColorData()
 {
-	GLsizei const size = n * n * 9 + 18;
+	GLsizei const size = n * n * 9 * l * 2 + 18;
 
 	GLfloat raw[size];
 	for (int i = 0; i < size; i += 3) {
@@ -247,7 +227,7 @@ void drawOpenGL(Window const * const _window, clock_t const & _lastInterval)
 
 	glBindVertexArray(g_vertexArrayId);
 
-	glDrawArrays(GL_TRIANGLES, 0, n * n * 3 + 6);//number of vertices
+	glDrawArrays(GL_TRIANGLES, 0, n * n * l * 2 * 3 + 6);//number of vertices
 
 	glBindVertexArray(0);
 
