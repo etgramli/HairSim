@@ -6,6 +6,8 @@
 #include "clVectorAdd.h"
 #include "clHelper.h"
 
+#include "GLwindow.h"
+
 /*
 typedef struct {
     cl_int3 start, end;
@@ -32,7 +34,7 @@ int hairLength = 5;     // Number of nodes of each hair
 const std::vector<std::string> prefferedOpenClVendors = {
     "Intel(R) Corporation",
     "NVIDIA Corporation",
-    "AMD"
+    "Advanced Micro Devices, Inc."
 };
 
 // Get a platform with the desired device type, OpenCL major version, vendors in descending order
@@ -43,27 +45,33 @@ cl::Platform getPlatform(cl_device_type type,
 // Create a context for the specified platform and the stated device type
 cl::Context createContext(cl_device_type type, cl::Platform *platform);
 
+// Open a window and start with OpenGL stuff
+void openGLWindow();
 
 int main() {
     cl_int err = CL_SUCCESS;
 
     // ---- SETUP ----
     cl::Platform plat = getPlatform(CL_DEVICE_TYPE_GPU, 1, prefferedOpenClVendors);
-    if (plat() == 0) {
-        std::cerr << "No OpenCL platform of version 1.* found that has GPU devices!" << std::endl;
-        return -1;
-    } else {
-        std::string info;
-        err = plat.getInfo(CL_PLATFORM_NAME, &info);
-        if (err == CL_SUCCESS) {
-            std::cout << "Chose platform: " << std::endl
-                << "\t" << plat.getInfo<CL_PLATFORM_VENDOR>() << std::endl
-                << "\t" << info << std::endl
-                << "\t" << plat.getInfo<CL_PLATFORM_VERSION>() << std::endl
-                << "\t" << plat.getInfo<CL_PLATFORM_PROFILE>() << std::endl
-                << "\t" << plat.getInfo<CL_PLATFORM_EXTENSIONS>() << std::endl << std::endl;
-        }
+	if (plat() == 0) {
+		std::cerr << "No OpenCL platform of version 1.* found that has GPU devices!" << std::endl;
+		plat = getPlatform(CL_DEVICE_TYPE_GPU, 2, prefferedOpenClVendors);
+		if (plat() == 0) {
+			std::cerr << "No OpenCL platform of version 2.* found that has GPU devices!" << std::endl;
+			return -1;
+		}
+	}
+    std::string info;
+    err = plat.getInfo(CL_PLATFORM_NAME, &info);
+    if (err == CL_SUCCESS) {
+        std::cout << "Chose platform: " << std::endl
+            << "\t" << plat.getInfo<CL_PLATFORM_VENDOR>() << std::endl
+            << "\t" << info << std::endl
+            << "\t" << plat.getInfo<CL_PLATFORM_VERSION>() << std::endl
+            << "\t" << plat.getInfo<CL_PLATFORM_PROFILE>() << std::endl
+            << "\t" << plat.getInfo<CL_PLATFORM_EXTENSIONS>() << std::endl << std::endl;
     }
+
     try {
         cl::Context context = createContext(CL_DEVICE_TYPE_GPU, &plat);
 
@@ -80,6 +88,7 @@ int main() {
 
         std::cout << "Is result correct: " << (vAdd->validate() ? "yes" : "false") << std::endl << std::endl;
 
+		openGLWindow();
     } catch (std::exception& e) {
         std::cout << e.what() << std::endl;
     }
@@ -134,4 +143,29 @@ cl::Context createContext(cl_device_type type, cl::Platform *platform) {
 	printStatus("Create context:", err);
 
     return context;
+}
+
+void openGLWindow() {
+	Window * window = Window::getInstance();
+
+	window->open("Sample", 800, 600);
+	window->setEyePoint(Vector4(0.0f, 0.0f, 500.0f, 1.0f));
+	window->setActive();
+
+	initializeOpenGL();
+
+	clock_t lastInterval = clock();
+
+	while (window->isOpen())
+	{
+		window->setActive();
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		drawOpenGL(window, lastInterval);
+
+		lastInterval = clock();
+
+		window->swapBuffer();
+	}
 }
