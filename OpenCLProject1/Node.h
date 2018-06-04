@@ -1,6 +1,14 @@
 #pragma once
 
 #include "CL\cl.hpp"
+#include "Vector.h"
+
+// Type definition must be the same as in kernel,
+// so that it can be copied from host to device
+typedef struct {
+    cl_float4 coordinates;
+    cl_bool isConst;
+} cl_Node;
 
 
 class Node {
@@ -24,7 +32,16 @@ public:
         return isConstant;
     }
 
-    cl_float4 getClData();
+    void move(Vector force) {
+        if (isConstant) {
+            return;
+        }
+        x += force.getX();
+        y += force.getY();
+        z = force.getZ();
+    }
+
+    cl_Node getClData();
 
 private:
     float x, y, z, a;

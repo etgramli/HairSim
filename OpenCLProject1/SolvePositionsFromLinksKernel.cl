@@ -1,3 +1,9 @@
+// Type definition must be the same as in kernel,
+// so that it can be copied from host to device
+typedef struct {
+    cl_float4 coordinates;
+    cl_bool isConst;
+} cl_Node;
 
 // TODO: Add OpenCL kernel code here.
 

@@ -15,11 +15,16 @@ Node::~Node()
 {
 }
 
-cl_float4 Node::getClData() {
-    cl_float4 node;
-    node.s0 = x;
-    node.s1 = y;
-    node.s2 = z;
-    node.s0 = a;
+cl_Node Node::getClData() {
+    cl_float4 coordinates;
+    coordinates.s0 = x;
+    coordinates.s1 = y;
+    coordinates.s2 = z;
+    coordinates.s0 = a;
+
+    cl_Node node;
+    node.coordinates = coordinates;
+    node.isConst = isConstant ? CL_TRUE : CL_FALSE;
+
     return node;
 }

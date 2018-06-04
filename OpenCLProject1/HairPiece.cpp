@@ -1,7 +1,6 @@
 #include "HairPiece.h"
 
-HairPiece::HairPiece(size_t dimX, size_t dimY, size_t dimZ)
-{
+HairPiece::HairPiece(size_t dimX, size_t dimY, size_t dimZ) {
     for (size_t x = 0; x < dimX; ++x) {
         std::vector<Node*> rowNodes = hairs[x];
         for (size_t y = 0; y < dimY; ++y) {
@@ -19,21 +18,7 @@ HairPiece::HairPiece(size_t dimX, size_t dimY, size_t dimZ)
     }
 }
 
-Link* HairPiece::getOutgoingLinkFor(Node *node) {
-    if (node == NULL) {
-        return NULL;
-    }
-    for (Link *current : links) {
-        if (current->getBegin() == node) {
-            return current;
-        }
-    }
-    return NULL;
-}
-
-
-HairPiece::~HairPiece()
-{
+HairPiece::~HairPiece() {
     for (size_t x = 0; x < hairs.size(); ++x) {
         std::vector<Node*> rowNodes = hairs[x];
         for (size_t y = 0; y < rowNodes.size(); ++y) {
@@ -48,10 +33,58 @@ HairPiece::~HairPiece()
             }
         }
     }
-
-
     // Todo: Cleanup Nodes and Links
     for (Link *current : links) {
         delete(current);
     }
+}
+
+Link* HairPiece::getOutgoingLinkFor(Node *node) {
+    if (node == NULL) {
+        return NULL;
+    }
+    for (Link *current : links) {
+        if (current->getBegin() == node) {
+            return current;
+        }
+    }
+    return NULL;
+}
+
+Node* HairPiece::getNextNodeFor(Node *node) {
+    if (node == NULL) {
+        return NULL;
+    }
+
+    Link *outGoingLink = getOutgoingLinkFor(node);
+    if (outGoingLink == NULL) {
+        return NULL;
+    } else {
+        return outGoingLink->getEnd();
+    }
+}
+
+std::vector<std::vector<Node*>> HairPiece::getStartNodes() {
+    return this->hairs;
+}
+
+// Length in Nodes
+unsigned int HairPiece::getHairLength() {
+    Node *startNode = hairs[0][0];
+    unsigned int length = 1;
+    Node *currentNode = startNode;
+    while ((currentNode = getNextNodeFor(currentNode)) != NULL) {
+        ++length;
+    }
+    return length;
+}
+
+cl_HairPiece HairPiece::toClData() {
+    cl_HairPiece hairPc;
+    hairPc.sizeX = hairs.size();
+    hairPc.sizeY = hairs[0].size();
+    hairPc.zizeZ = getHairLength();
+    // ToDo
+
+    return hairPc;
 }
