@@ -148,7 +148,7 @@ cl::Context createContext(cl_device_type type, cl::Platform *platform) {
 void openGLWindow() {
 	Window * window = Window::getInstance();
 
-	window->open("Sample", 800, 600);
+	window->open("Hair Simulation", 800, 600);
 	window->setEyePoint(Vector4(0.0f, 0.0f, 500.0f, 1.0f));
 	window->setActive();
 
