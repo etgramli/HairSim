@@ -6,7 +6,7 @@
 #include "clVectorAdd.h"
 #include "clHelper.h"
 
-#include "GLwindow.h"
+//#include "GLwindow.h"
 
 /*
 typedef struct {
@@ -46,7 +46,7 @@ cl::Platform getPlatform(cl_device_type type,
 cl::Context createContext(cl_device_type type, cl::Platform *platform);
 
 // Open a window and start with OpenGL stuff
-void openGLWindow();
+//void openGLWindow();
 
 int main() {
     cl_int err = CL_SUCCESS;
@@ -88,7 +88,7 @@ int main() {
 
         std::cout << "Is result correct: " << (vAdd->validate() ? "yes" : "false") << std::endl << std::endl;
 
-		openGLWindow();
+		//openGLWindow();
     } catch (std::exception& e) {
         std::cout << e.what() << std::endl;
     }
@@ -144,7 +144,7 @@ cl::Context createContext(cl_device_type type, cl::Platform *platform) {
 
     return context;
 }
-
+/*
 void openGLWindow() {
 	Window * window = Window::getInstance();
 
@@ -168,4 +168,4 @@ void openGLWindow() {
 
 		window->swapBuffer();
 	}
-}
+}*/

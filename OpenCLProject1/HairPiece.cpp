@@ -80,11 +80,11 @@ unsigned int HairPiece::getHairLength() {
 }
 
 cl_HairPiece HairPiece::toClData() {
-    cl_HairPiece hairPc;
-    hairPc.sizeX = hairs.size();
-    hairPc.sizeY = hairs[0].size();
-    hairPc.zizeZ = getHairLength();
-    // ToDo
+    cl_HairPiece hairPieceCL;
+    hairPieceCL.sizeX = hairs.size();
+    hairPieceCL.sizeY = hairs[0].size();
+    hairPieceCL.zizeZ = getHairLength();
+    // ToDo: Copy Buffers to Device and get Addresses correctly
 
-    return hairPc;
+    return hairPieceCL;
 }

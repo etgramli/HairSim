@@ -32,6 +32,22 @@ public:
         return isConstant;
     }
 
+    void setPosition(float x, float y, float z) {
+        this->x = x;
+        this->y = y;
+        this->z = z;
+    }
+
+    Vector minus(Node *b) {
+        if (b == NULL) {
+            return Vector(x,y,z);
+        } else {
+            return Vector(this->x - b->getX(),
+                this->y - b->getY(),
+                this->z - b->getZ());
+        }
+    }
+
     void move(Vector force) {
         if (isConstant) {
             return;
@@ -41,9 +57,16 @@ public:
         z = force.getZ();
     }
 
+    void addForce(Vector *force) {
+        *this->velocity += *force;
+    }
+
     cl_Node getClData();
 
 private:
     float x, y, z, a;
-    bool isConstant;
+    const bool isConstant;
+
+    Vector *velocity;
+    float mass;
 };

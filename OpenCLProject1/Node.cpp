@@ -1,13 +1,8 @@
 #include "Node.h"
 
 
-Node::Node(float x, float y, float z, float a, bool isConst)
+Node::Node(float x, float y, float z, float a, bool isConst): x(x), y(y), z(z), isConstant(isConst)
 {
-    this->x = x;
-    this->y = y;
-    this->z = z;
-    this->a = a;
-    this->isConstant = isConst;
 }
 
 

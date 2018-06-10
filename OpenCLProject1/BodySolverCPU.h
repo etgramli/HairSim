@@ -9,6 +9,13 @@ private:
     HairPiece hairPiece;
     std::vector<Vector *> forces;
 
+    Vector addAllForces() {
+        Vector sum;
+        for (Vector *current : forces) {
+            sum += *current;
+        }
+    }
+
 public:
     BodySolverCPU();
     BodySolverCPU(std::vector<Vector *> forces) {

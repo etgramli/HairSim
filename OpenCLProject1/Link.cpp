@@ -1,11 +1,8 @@
 #include "Link.h"
 
 
-Link::Link(Node *begin, Node *end, int strength)
+Link::Link(Node *begin, Node *end, float restLength): begin(begin), end(end), restLength(restLength)
 {
-    this->begin = begin;
-    this->end = end;
-    this->strength = strength;
 }
 
 
