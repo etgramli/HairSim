@@ -4,6 +4,28 @@
 
 BodySolverCPU::BodySolverCPU()
 {
+    Vector *gravity = new Vector(0.0f,0.0f,-9.81);
+    this->forces.push_back(gravity);
+}
+
+BodySolverCPU::BodySolverCPU(std::vector<Vector *> forces) {
+    for (Vector *force : forces) {
+        this->forces.push_back(force);
+    }
+}
+
+BodySolverCPU::~BodySolverCPU() {
+    for (Vector *force : forces) {
+        delete force;
+    }
+}
+
+Vector BodySolverCPU::addAllForces() {
+    Vector sum;
+    for (Vector *current : forces) {
+        sum += *current;
+    }
+    return sum;
 }
 
 /*

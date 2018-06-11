@@ -3,25 +3,22 @@
 #include "Node.h"
 
 class Link {
+
+    //int strength;
+    const float restLength;
+    Node *begin, *end;
+
 public:
-    Link(Node *begin, Node *end, float restLength = 0.1);
-    ~Link();
+    Link(Node *begin, Node *end, float restLength = 0.1f): begin(begin), end(end), restLength(restLength) {}
+    ~Link() {}
     /*
     int getStrength() {
         return strength;
     }
     */
 
-    float getRestLength() const {
-        return restLength;
-    }
-
-    Node* getBegin();
-    Node* getEnd();
-
-private:
-    //int strength;
-    const float restLength;
-    Node *begin, *end;
+    Node* getBegin() const;
+    Node* getEnd() const;
+    float getRestLength() const;
 };
 

@@ -21,6 +21,12 @@ typedef struct {
 
 class HairPiece
 {
+
+    std::vector<std::vector<Node*>> hairs;
+    std::unordered_set<Link*> links;
+
+    unsigned int getHairLength();
+
 public:
     HairPiece(size_t dimX = 5, size_t dimY = 5, size_t dimZ = 5);
     ~HairPiece();
@@ -28,14 +34,7 @@ public:
     Link* getOutgoingLinkFor(Node *node);
     Node* getNextNodeFor(Node *node);
     std::vector<std::vector<Node*>> getStartNodes();
-    std::unordered_set<Link *> getLinks() {
-        return links;
-    }
+    std::unordered_set<Link *> getLinks();
 
     cl_HairPiece toClData();
-private:
-    std::vector<std::vector<Node*>> hairs;
-    std::unordered_set<Link*> links;
-
-    unsigned int getHairLength();
 };

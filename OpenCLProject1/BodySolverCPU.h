@@ -9,25 +9,12 @@ private:
     HairPiece hairPiece;
     std::vector<Vector *> forces;
 
-    Vector addAllForces() {
-        Vector sum;
-        for (Vector *current : forces) {
-            sum += *current;
-        }
-    }
+    Vector addAllForces();
 
 public:
     BodySolverCPU();
-    BodySolverCPU(std::vector<Vector *> forces) {
-        for (Vector *force : forces) {
-            this->forces.push_back(force);
-        }
-    }
-    ~BodySolverCPU() {
-        for (Vector *force : forces) {
-            delete force;
-        }
-    }
+    BodySolverCPU(std::vector<Vector *> forces);
+    ~BodySolverCPU();
 
     void pSolve_Links();
     void pSolveSinlgeLink(Link *link);

@@ -68,6 +68,10 @@ std::vector<std::vector<Node*>> HairPiece::getStartNodes() {
     return this->hairs;
 }
 
+std::unordered_set<Link *> HairPiece::getLinks() {
+    return links;
+}
+
 // Length in Nodes
 unsigned int HairPiece::getHairLength() {
     Node *startNode = hairs[0][0];
