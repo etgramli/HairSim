@@ -20,6 +20,14 @@ BodySolverCPU::~BodySolverCPU() {
     }
 }
 
+
+float BodySolverCPU::getDeltaTime() const {
+    return deltaTime;
+}
+void BodySolverCPU::setDeltaTime(float deltaTime) {
+    this->deltaTime = deltaTime;
+}
+
 Vector BodySolverCPU::addAllForces() {
     Vector sum;
     for (Vector *current : forces) {
@@ -52,19 +60,26 @@ void btSoftBody::PSolve_Links(
 }
 */
 void BodySolverCPU::pSolve_Links() {
-    /*
+    // Loop through all links, because all links must have begin and end point
     for (Link *currentLink : this->hairPiece.getLinks()) {
-        if (currentLink->getBegin != NULL && currentLink->getEnd != NULL) {
+        if (currentLink->getBegin() != NULL && currentLink->getEnd() != NULL) {
             Node *a = currentLink->getBegin();
             Node *b = currentLink->getEnd();
+            // Add up all forces to begin and end nodes
             const Vector diff = a->minus(b);
             const float len = diff.length2();
             const float restLength = currentLink->getRestLength();
-            const float k = ((restLength - len) /
-                (massLSC * (restLength + len))) * kst;
+
+            const Vector compinedForces = addAllForces();
+            const Vector springForce = currentLink->getSpringForce();
+            const Vector forcesNodeA = compinedForces + springForce;
+            const Vector forcesNodeB = compinedForces - springForce;
+            // Move nodes
+            a->move(forcesNodeA);
+            b->move(forcesNodeB);
         }
     }
-    */
+    
     /*
     std::vector<std::vector<Node*>> startNodes = hairPiece.getStartNodes();
     for (size_t x = 0; x < startNodes.size(); ++x) {

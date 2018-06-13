@@ -6,9 +6,12 @@ Vector& Vector::operator+=(const Vector& vector) {
     return *this;
 }
 
-inline Vector operator+(Vector lhs, const Vector &rhs) {
-    lhs += rhs;
-    return lhs;
+
+Vector& Vector::operator-=(const Vector& vector) {
+    this->x -= vector.getX();
+    this->y -= vector.getY();
+    this->z -= vector.getZ();
+    return *this;
 }
 
 
@@ -50,4 +53,12 @@ void Vector::add(const Vector vector) {
 }
 void Vector::add(const Vector * const vector) {
     this->add(*vector);
+}
+
+cl_Vector Vector::getClData() {
+    cl_float3 vec;
+    vec.x = x;
+    vec.y = y;
+    vec.z = z;
+    return vec;
 }

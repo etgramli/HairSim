@@ -2,6 +2,8 @@
 
 #include "CL\cl.hpp"
 
+typedef cl_float3 cl_Vector;
+
 class Vector
 {
     float x, y, z;
@@ -12,6 +14,7 @@ public:
     ~Vector() {}
 
     Vector& operator+=(const Vector& vector);
+    Vector& operator-=(const Vector& vector);
 
     float getX() const;
 
@@ -28,4 +31,24 @@ public:
 
     void add(const Vector vector);
     void add(const Vector * const vector);
+    void add(const float scalar) {
+        x += scalar;
+        y += scalar;
+        z += scalar;
+    }
+    void subtract(const float scalar) {
+        add(-scalar);
+    }
+
+    cl_Vector getClData();
 };
+
+inline Vector operator+(Vector lhs, const Vector &rhs) {
+    lhs += rhs;
+    return lhs;
+}
+
+inline Vector operator-(Vector lhs, const Vector &rhs) {
+    lhs -= rhs;
+    return lhs;
+}

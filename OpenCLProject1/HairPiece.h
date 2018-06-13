@@ -19,8 +19,8 @@ typedef struct {
     cl_Link *links;
 } cl_HairPiece;
 
-class HairPiece
-{
+// Container class for multiple hair strings.
+class HairPiece {
 
     std::vector<std::vector<Node*>> hairs;
     std::unordered_set<Link*> links;
@@ -37,4 +37,6 @@ public:
     std::unordered_set<Link *> getLinks();
 
     cl_HairPiece toClData();
+
+    //void render();
 };

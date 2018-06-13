@@ -1,6 +1,6 @@
 #include "GLwindow.h"
 
-/*
+
 GLuint g_vertexArrayId = 0;
 GLuint g_shaderId = 0;
 const int n = 40;
@@ -233,4 +233,4 @@ void drawOpenGL(Window const * const _window, clock_t const & _lastInterval)
 	glBindVertexArray(0);
 
 	glUseProgram(0);
-}*/
+}

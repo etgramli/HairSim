@@ -30,6 +30,12 @@ float Node::getA() {
 bool Node::isConst() {
     return isConstant;
 }
+float Node::getMass() {
+    return mass;
+}
+float Node::getInverseMass() {
+    return pow(getMass(), -1);
+}
 
 void Node::setPosition(float x, float y, float z) {
     this->x = x;

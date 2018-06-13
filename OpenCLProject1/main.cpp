@@ -6,29 +6,8 @@
 #include "clVectorAdd.h"
 #include "clHelper.h"
 
-//#include "GLwindow.h"
+#include "GLwindow.h"
 
-/*
-typedef struct {
-    cl_int3 start, end;
-} vector3d;
-
-typedef struct {
-    cl_float4 coordinate;
-    cl_uint3 color;
-    cl_uint mass;
-    cl_bool isStatic;
-} vertex;
-
-typedef struct {
-    cl_int3 boxStart, boxEnd;   // Two edge points that contains the area in which the force applies
-    vector3d direction; // direction of the force
-    cl_uint strength;
-};
-
-int areaLength = 5;     // Edge length of the area on which hairs are
-int hairLength = 5;     // Number of nodes of each hair
-*/
 
 // Must be in opposite order (here AMD would be selected first, then Nvidia, at last Intel)
 const std::vector<std::string> prefferedOpenClVendors = {
@@ -46,7 +25,7 @@ cl::Platform getPlatform(cl_device_type type,
 cl::Context createContext(cl_device_type type, cl::Platform *platform);
 
 // Open a window and start with OpenGL stuff
-//void openGLWindow();
+void openGLWindow();
 
 int main() {
     cl_int err = CL_SUCCESS;
@@ -88,7 +67,7 @@ int main() {
 
         std::cout << "Is result correct: " << (vAdd->validate() ? "yes" : "false") << std::endl << std::endl;
 
-		//openGLWindow();
+		openGLWindow();
     } catch (std::exception& e) {
         std::cout << e.what() << std::endl;
     }
@@ -144,7 +123,7 @@ cl::Context createContext(cl_device_type type, cl::Platform *platform) {
 
     return context;
 }
-/*
+
 void openGLWindow() {
 	Window * window = Window::getInstance();
 
@@ -168,4 +147,4 @@ void openGLWindow() {
 
 		window->swapBuffer();
 	}
-}*/
+}

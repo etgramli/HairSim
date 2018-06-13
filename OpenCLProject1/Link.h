@@ -4,15 +4,16 @@
 
 class Link {
 
-    //int strength;
-    const float restLength;
+    //float springConstant;
+    const float length = 1.0f;
+    float restLength;
     Node *begin, *end;
 
 public:
     Link(Node *begin, Node *end, float restLength = 0.1f): begin(begin), end(end), restLength(restLength) {}
     ~Link() {}
     /*
-    int getStrength() {
+    float getSpringConstant() {
         return strength;
     }
     */
@@ -20,5 +21,6 @@ public:
     Node* getBegin() const;
     Node* getEnd() const;
     float getRestLength() const;
-};
 
+    Vector getSpringForce();
+};

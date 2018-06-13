@@ -11,3 +11,16 @@ Node* Link::getEnd() const {
 float Link::getRestLength() const {
     return restLength;
 }
+
+Vector Link::getSpringForce() {
+    Vector diff = begin->minus(end);
+    if (diff.length() > length) {
+        diff.subtract(restLength);  // springDisplacement
+    } else if (diff.length() < length){
+        diff.add(restLength);
+    }
+
+    // ToDo
+
+    return diff;
+};
