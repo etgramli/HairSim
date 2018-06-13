@@ -2,7 +2,7 @@
 
 HairPiece::HairPiece(size_t dimX, size_t dimY, size_t dimZ) {
     for (size_t x = 0; x < dimX; ++x) {
-        std::vector<Node*> rowNodes = hairs[x];
+        std::vector<Node*> rowNodes;
         for (size_t y = 0; y < dimY; ++y) {
             Node *currentRowStartNode = new Node(x, y, 0.0, 0.0, true);
             rowNodes.push_back(currentRowStartNode);
@@ -15,6 +15,7 @@ HairPiece::HairPiece(size_t dimX, size_t dimY, size_t dimZ) {
                 rowNodes.push_back(currentNode);
             }
         }
+        hairs.push_back(rowNodes);
     }
 }
 
@@ -91,4 +92,22 @@ cl_HairPiece HairPiece::toClData() {
     // ToDo: Copy Buffers to Device and get Addresses correctly
 
     return hairPieceCL;
+}
+
+std::vector<float> HairPiece::getCoordinatesForGL() {
+    std::vector<float> out;
+
+    for (Link *currentLink : links) {
+        Node *a = currentLink->getBegin();
+        out.push_back(a->getX());
+        out.push_back(a->getY());
+        out.push_back(a->getZ());
+        printf("(%f, %f, %f)", a->getX(), a->getY(), a->getZ());
+        Node *b = currentLink->getEnd();
+        out.push_back(b->getX());
+        out.push_back(b->getY());
+        out.push_back(b->getZ());
+        printf("(%f, %f, %f)", b->getX(), b->getY(), b->getZ());
+    }
+    return out;
 }

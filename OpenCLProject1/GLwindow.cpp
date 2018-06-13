@@ -1,4 +1,5 @@
 #include "GLwindow.h"
+#include "HairPiece.h"
 
 
 GLuint g_vertexArrayId = 0;
@@ -242,7 +243,7 @@ void initializeOpenGL()
 	vertexBufferId = 1;
 	glGenBuffers(1, &vertexBufferId);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-	std::vector<GLfloat> const mesh2 = generateHair();
+	std::vector<GLfloat> const mesh2 = HairPiece(10,10,10).getCoordinatesForGL();
 	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * mesh2.size(), &mesh2[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
@@ -252,7 +253,7 @@ void initializeOpenGL()
 	colorBufferId = 1;
 	glGenBuffers(1, &colorBufferId);
 	glBindBuffer(GL_ARRAY_BUFFER, colorBufferId);
-	std::vector<GLfloat> const colors2 = generateHairColorData();
+	std::vector<GLfloat> const colors2 = HairPiece(10,10,10).getCoordinatesForGL();
 	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * colors2.size(), &colors2[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(1);

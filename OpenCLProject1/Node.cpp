@@ -5,7 +5,6 @@ cl_Node Node::getClData() {
     coordinates.s0 = x;
     coordinates.s1 = y;
     coordinates.s2 = z;
-    coordinates.s0 = a;
 
     cl_Node node;
     node.coordinates = coordinates;
@@ -23,9 +22,6 @@ float Node::getY() {
 }
 float Node::getZ() {
     return z;
-}
-float Node::getA() {
-    return a;
 }
 bool Node::isConst() {
     return isConstant;

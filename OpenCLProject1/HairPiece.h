@@ -38,5 +38,7 @@ public:
 
     cl_HairPiece toClData();
 
+    std::vector<float> getCoordinatesForGL();
+
     //void render();
 };

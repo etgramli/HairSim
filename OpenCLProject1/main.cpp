@@ -8,6 +8,7 @@
 
 #include "GLwindow.h"
 
+#include "HairPiece.h"
 
 // Must be in opposite order (here AMD would be selected first, then Nvidia, at last Intel)
 const std::vector<std::string> prefferedOpenClVendors = {
@@ -29,6 +30,8 @@ void openGLWindow();
 
 int main() {
     cl_int err = CL_SUCCESS;
+
+    HairPiece hp = HairPiece(10,10,10);
 
     // ---- SETUP ----
     cl::Platform plat = getPlatform(CL_DEVICE_TYPE_GPU, 1, prefferedOpenClVendors);

@@ -15,20 +15,19 @@ typedef struct {
 
 class Node {
 
-    float x, y, z, a;
+    float x, y, z;
     const bool isConstant;
 
     Vector *velocity;
     float mass;
 
 public:
-    Node(float x, float y, float z, float a = 0, float mass = 1.0f, bool isConst = false): x(x), y(y), z(z), a(a), mass(mass), isConstant(isConst) {}
+    Node(float x, float y, float z, float mass = 1.0f, bool isConst = false): x(x), y(y), z(z), mass(mass), isConstant(isConst) {}
     ~Node() {}
 
     float getX();
     float getY();
     float getZ();
-    float getA();
     float getMass();
     float getInverseMass();
     bool isConst();
