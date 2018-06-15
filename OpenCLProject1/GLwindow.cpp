@@ -1,5 +1,6 @@
 #include "GLwindow.h"
 #include "HairPiece.h"
+#include "BodySolverCPU.h"
 
 
 GLuint g_vertexArrayId = 0;
@@ -7,7 +8,11 @@ GLuint g_vertexArrayId2 = 1;
 GLuint g_shaderId = 0;
 const int n = 50; // n * n = number of hair strands
 const int l = 12; // number of hair segments
-const float seg_l = 0.1; // hair segment length
+const float seg_l = 0.1f; // hair segment length
+
+//HairPiece hairMesh = HairPiece(10, 10, 10);
+HairPiece hairColors = HairPiece(10, 10, 10);
+BodySolverCPU bodySolver = BodySolverCPU();
 
 GLuint loadShaders(const char * vertex_file_path, const char * fragment_file_path)
 {
@@ -110,12 +115,12 @@ std::vector<GLfloat> generateFloor()
 	GLfloat vertices[size];
 
 	vertices[0] = -2.5f, vertices[1] = -1.0f, vertices[2] = -2.5f,
-	vertices[3] = -2.5f, vertices[4] = -1.0f, vertices[5] = 2.5f,
-	vertices[6] = 2.5f, vertices[7] = -1.0f, vertices[8] = 2.5f,
+		vertices[3] = -2.5f, vertices[4] = -1.0f, vertices[5] = 2.5f,
+		vertices[6] = 2.5f, vertices[7] = -1.0f, vertices[8] = 2.5f,
 
-	vertices[9] = -2.5f, vertices[10] = -1.0f, vertices[11] = -2.5f,
-	vertices[12] = 2.5f, vertices[13] = -1.0f, vertices[14] = 2.5f,
-	vertices[15] = 2.5f, vertices[16] = -1.0f, vertices[17] = -2.5f;
+		vertices[9] = -2.5f, vertices[10] = -1.0f, vertices[11] = -2.5f,
+		vertices[12] = 2.5f, vertices[13] = -1.0f, vertices[14] = 2.5f,
+		vertices[15] = 2.5f, vertices[16] = -1.0f, vertices[17] = -2.5f;
 
 	std::vector<GLfloat> mesh;
 
@@ -147,8 +152,8 @@ std::vector<GLfloat> generateHair()
 		float s_l = seg_l + 0.05f * ((float)rand() / RAND_MAX - 0.5f);
 		for (int m = 0; m < l; m++) {
 			int idx = i + m * 6;
-			vertices[idx] = -2.0f + k,     vertices[idx + 1] = -1.0f + m * s_l,       vertices[idx + 2] = -2.0f + j,
-			vertices[idx + 3] = -2.0f + k, vertices[idx + 4] = -1.0f + (m + 1) * s_l, vertices[idx + 5] = -2.0f + j;
+			vertices[idx] = -2.0f + k, vertices[idx + 1] = -1.0f + m * s_l, vertices[idx + 2] = -2.0f + j,
+				vertices[idx + 3] = -2.0f + k, vertices[idx + 4] = -1.0f + (m + 1) * s_l, vertices[idx + 5] = -2.0f + j;
 		}
 		j -= r;
 		k += s + 0.05f * ((float)rand() / RAND_MAX - 0.5f);
@@ -160,7 +165,7 @@ std::vector<GLfloat> generateHair()
 	{
 		mesh.push_back(vertices[index]);
 	}
-	
+
 	return mesh;
 }
 
@@ -194,7 +199,7 @@ std::vector<GLfloat> generateHairColorData()
 			float r = (float)rand() / RAND_MAX;
 			float c = 1.0f - (l - m) * 0.05f;
 			raw[idx] = (0.98f - r) * c, raw[idx + 1] = (0.941f - r) * c, raw[idx + 2] = (0.745f - r) * c,
-			raw[idx + 3] = (0.98f - r) * c, raw[idx + 4] = (0.941f - r) * c, raw[idx + 5] = (0.745f - r) * c;
+				raw[idx + 3] = (0.98f - r) * c, raw[idx + 4] = (0.941f - r) * c, raw[idx + 5] = (0.745f - r) * c;
 		}
 	}
 
@@ -243,8 +248,8 @@ void initializeOpenGL()
 	vertexBufferId = 1;
 	glGenBuffers(1, &vertexBufferId);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-	std::vector<GLfloat> const mesh2 = HairPiece(10,10,10).getCoordinatesForGL();
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * mesh2.size(), &mesh2[0], GL_STATIC_DRAW);
+	std::vector<GLfloat> const hairMesh = bodySolver.getHairPiece()->getCoordinatesForGL();
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * hairMesh.size(), &hairMesh[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
@@ -253,8 +258,7 @@ void initializeOpenGL()
 	colorBufferId = 1;
 	glGenBuffers(1, &colorBufferId);
 	glBindBuffer(GL_ARRAY_BUFFER, colorBufferId);
-	std::vector<GLfloat> const colors2 = HairPiece(10,10,10).getCoordinatesForGL();
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * colors2.size(), &colors2[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * hairColors.getCoordinatesForGL().size(), &hairColors.getCoordinatesForGL()[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, colorBufferId);
@@ -267,6 +271,31 @@ void initializeOpenGL()
 
 void drawOpenGL(Window const * const _window, clock_t const & _lastInterval)
 {
+	bodySolver.pSolve_Links();
+	glGenVertexArrays(1, &g_vertexArrayId2);
+	glBindVertexArray(g_vertexArrayId2);
+
+	GLuint vertexBufferId = 1;
+	glGenBuffers(1, &vertexBufferId);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
+	std::vector<GLfloat> const hairMesh = bodySolver.getHairPiece()->getCoordinatesForGL();
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * hairMesh.size(), &hairMesh[0], GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)NULL);
+
+	GLuint colorBufferId = 1;
+	glGenBuffers(1, &colorBufferId);
+	glBindBuffer(GL_ARRAY_BUFFER, colorBufferId);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * hairColors.getCoordinatesForGL().size(), &hairColors.getCoordinatesForGL()[0], GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, colorBufferId);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)NULL);
+
+	glBindVertexArray(0);
+
 	glUseProgram(g_shaderId);
 
 	GLfloat const rotationAngle = static_cast< GLfloat >(_lastInterval) / 1000.0f * 20.0f;

@@ -1,10 +1,18 @@
 #include "HairPiece.h"
 
 HairPiece::HairPiece(size_t dimX, size_t dimY, size_t dimZ) {
+
+	std::vector<Node *> startNodes;
+
     for (size_t x = 0; x < dimX; ++x) {
         std::vector<Node*> rowNodes;
         for (size_t y = 0; y < dimY; ++y) {
             Node *currentRowStartNode = new Node(x, y, 0.0, 0.0, true);
+			
+			
+			startNodes.push_back(currentRowStartNode);
+
+
             rowNodes.push_back(currentRowStartNode);
             for (size_t z = 1; z < dimZ; ++z) {
                 Node *currentNode = new Node(x,y,z);
@@ -17,6 +25,13 @@ HairPiece::HairPiece(size_t dimX, size_t dimY, size_t dimZ) {
         }
         hairs.push_back(rowNodes);
     }
+
+	for (Node *current : startNodes) {
+		for (Node *c : startNodes) {
+			Link *newLink = new Link(current, c);
+			links.insert(newLink);
+		}
+	}
 }
 
 HairPiece::~HairPiece() {
@@ -100,14 +115,12 @@ std::vector<float> HairPiece::getCoordinatesForGL() {
     for (Link *currentLink : links) {
         Node *a = currentLink->getBegin();
         out.push_back(a->getX());
-        out.push_back(a->getY());
         out.push_back(a->getZ());
-        printf("(%f, %f, %f)", a->getX(), a->getY(), a->getZ());
+        out.push_back(a->getY());
         Node *b = currentLink->getEnd();
         out.push_back(b->getX());
-        out.push_back(b->getY());
         out.push_back(b->getZ());
-        printf("(%f, %f, %f)", b->getX(), b->getY(), b->getZ());
+        out.push_back(b->getY());
     }
     return out;
 }

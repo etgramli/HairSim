@@ -4,7 +4,7 @@
 
 BodySolverCPU::BodySolverCPU()
 {
-    Vector *gravity = new Vector(0.0f,0.0f,-9.81);
+    Vector *gravity = new Vector(0.0f, 0.0f, -0.5f);
     this->forces.push_back(gravity);
 }
 
@@ -66,14 +66,10 @@ void BodySolverCPU::pSolve_Links() {
             Node *a = currentLink->getBegin();
             Node *b = currentLink->getEnd();
             // Add up all forces to begin and end nodes
-            const Vector diff = a->minus(b);
-            const float len = diff.length2();
-            const float restLength = currentLink->getRestLength();
-
             const Vector compinedForces = addAllForces();
             const Vector springForce = currentLink->getSpringForce();
-            const Vector forcesNodeA = compinedForces + springForce;
-            const Vector forcesNodeB = compinedForces - springForce;
+			const Vector forcesNodeA = compinedForces + springForce;
+			const Vector forcesNodeB = compinedForces - springForce;
             // Move nodes
             a->move(forcesNodeA);
             b->move(forcesNodeB);

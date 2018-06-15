@@ -55,7 +55,7 @@ void Node::move(Vector force) {
     }
     x += force.getX();
     y += force.getY();
-    z = force.getZ();
+    z += force.getZ();
 }
 
 void Node::addForce(Vector *force) {
