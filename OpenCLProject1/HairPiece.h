@@ -6,17 +6,11 @@
 
 
 typedef struct {
-    cl_Node *begin;
-    cl_Node *end;
-} cl_Link;
-
-
-typedef struct {
     cl_Node **grid;
     cl_uint sizeX;
     cl_uint sizeY;
     cl_uint zizeZ;
-    cl_Link *links;
+    //cl_Link *links;
 } cl_HairPiece;
 
 // Container class for multiple hair strings.
@@ -39,6 +33,4 @@ public:
     cl_HairPiece toClData();
 
     std::vector<float> getCoordinatesForGL();
-
-    //void render();
 };

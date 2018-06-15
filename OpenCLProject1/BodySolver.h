@@ -1,6 +1,8 @@
 #pragma once
 #include "CL\cl.hpp"
 
+#include "Link.h"
+
 
 class BodySolver
 {
@@ -11,11 +13,16 @@ public:
     BodySolver(cl::CommandQueue *queue);
     ~BodySolver();
 
+
     void solveLinksForPosition(int startLink, 
                                int numLinks, 
                                float kst,
                                float ti);
 private:
+    // Data
+    std::vector<Link *> links;
+
+    // OpenCL
     cl::Context *context;
     cl::CommandQueue *queue;
 
