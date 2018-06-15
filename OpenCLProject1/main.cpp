@@ -131,7 +131,7 @@ void openGLWindow() {
 	Window * window = Window::getInstance();
 
 	window->open("Hair Simulation", 800, 600);
-	window->setEyePoint(Vector4(0.0f, 0.0f, 500.0f, 1.0f));
+	window->setEyePoint(Vector4(0.0f, 100.0f, 800.0f, 1.0f));
 	window->setActive();
 
 	initializeOpenGL();

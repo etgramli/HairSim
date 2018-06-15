@@ -26,12 +26,12 @@ HairPiece::HairPiece(size_t dimX, size_t dimY, size_t dimZ) {
         hairs.push_back(rowNodes);
     }
 
-	for (Node *current : startNodes) {
+	/*for (Node *current : startNodes) {
 		for (Node *c : startNodes) {
 			Link *newLink = new Link(current, c);
 			links.insert(newLink);
 		}
-	}
+	}*/
 }
 
 HairPiece::~HairPiece() {
