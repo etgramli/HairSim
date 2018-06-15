@@ -26,12 +26,6 @@ float Node::getZ() {
 bool Node::isConst() {
     return isConstant;
 }
-float Node::getMass() {
-    return mass;
-}
-float Node::getInverseMass() {
-    return pow(getMass(), -1);
-}
 
 void Node::setPosition(float x, float y, float z) {
     this->x = x;
@@ -56,8 +50,4 @@ void Node::move(Vector force) {
     x += force.getX();
     y += force.getY();
     z += force.getZ();
-}
-
-void Node::addForce(Vector *force) {
-    *this->velocity += *force;
 }
