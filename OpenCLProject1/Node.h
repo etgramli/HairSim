@@ -41,6 +41,4 @@ public:
     void addForce(Vector *force);
 
     cl_Node getClData();
-
-    //void render();
 };
