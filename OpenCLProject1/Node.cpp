@@ -1,7 +1,7 @@
 #include "Node.h"
 
 cl_Node Node::getClData() {
-    cl_float4 coordinates;
+    cl_float3 coordinates;
     coordinates.s0 = x;
     coordinates.s1 = y;
     coordinates.s2 = z;

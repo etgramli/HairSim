@@ -32,7 +32,5 @@ public:
 
     void move(Vector force);
 
-    void addForce(Vector *force);
-
     cl_Node getClData();
 };

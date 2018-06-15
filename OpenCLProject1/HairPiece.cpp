@@ -99,16 +99,6 @@ unsigned int HairPiece::getHairLength() {
     return length;
 }
 
-cl_HairPiece HairPiece::toClData() {
-    cl_HairPiece hairPieceCL;
-    hairPieceCL.sizeX = hairs.size();
-    hairPieceCL.sizeY = hairs[0].size();
-    hairPieceCL.zizeZ = getHairLength();
-    // ToDo: Copy Buffers to Device and get Addresses correctly
-
-    return hairPieceCL;
-}
-
 std::vector<float> HairPiece::getCoordinatesForGL() {
     std::vector<float> out;
 
@@ -123,4 +113,50 @@ std::vector<float> HairPiece::getCoordinatesForGL() {
         out.push_back(b->getY());
     }
     return out;
+}
+
+
+
+
+
+std::vector<cl_Node> HairPiece::getNodesAsVector(std::map<Node *, int> *nodeAddressesToIndex) {
+    std::vector<cl_Node> clNodes;
+
+    for (size_t x = 0; x < hairs.size(); ++x) {
+        std::vector<Node*> rowNodes = hairs[x];
+        for (size_t y = 0; y < rowNodes.size(); ++y) {
+            Node *currentNode = rowNodes[y];
+            clNodes.push_back(currentNode->getClData());
+            nodeAddressesToIndex->insert(std::pair<Node *, int>(currentNode, clNodes.size()));
+        }
+    }
+    return clNodes;
+}
+
+cl_Link HairPiece::getLinkClData(const Link * const link, std::map<Node *, int> nodeAddressToId) {
+    cl_Link cl_link;
+
+    cl_link.length = link->getLength();
+    cl_link.springConstant = link->getSpringConstant();
+    cl_link.threshold = link->getTreshold();
+
+    cl_link.beginNodeId = nodeAddressToId[link->getBegin()];
+    cl_link.endNodeId = nodeAddressToId[link->getEnd()];
+
+    return cl_link;
+}
+
+
+cl_HairPiece HairPiece::getClData() {
+    cl_HairPiece cl_hairPiece;
+
+    cl_hairPiece.sizeX = hairs.size();
+    cl_hairPiece.sizeY = hairs.at(0).size();
+    cl_hairPiece.sizeZ = getHairLength();
+
+    cl_hairPiece.numLinks = links.size();
+
+    // ToDo: Copy Buffers to Device and get Addresses correctly
+
+    return cl_hairPiece;
 }
