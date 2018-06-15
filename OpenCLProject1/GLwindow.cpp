@@ -6,9 +6,6 @@
 GLuint g_vertexArrayId = 0;
 GLuint g_vertexArrayId2 = 1;
 GLuint g_shaderId = 0;
-const int n = 50; // n * n = number of hair strands
-const int l = 12; // number of hair segments
-const float seg_l = 0.1f; // hair segment length
 
 std::vector<GLfloat> hairColors;
 BodySolverCPU bodySolver = BodySolverCPU();
@@ -219,7 +216,7 @@ void drawOpenGL(Window const * const _window, clock_t const & _lastInterval)
 
 	glBindVertexArray(g_vertexArrayId2);
 
-	glDrawArrays(GL_LINES, 0, n * n * l * 2);//number of vertices
+	glDrawArrays(GL_LINES, 0, bodySolver.getHairPiece()->getCoordinatesForGL().size() / 3.0f);//number of vertices
 
 	glBindVertexArray(0);
 
