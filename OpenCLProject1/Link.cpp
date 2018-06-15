@@ -13,14 +13,14 @@ float Link::getRestLength() const {
 }
 
 Vector Link::getSpringForce() {
-    Vector diff = begin->minus(end);
-    if (diff.length() > length) {
-        diff.subtract(restLength);  // springDisplacement
-    } else if (diff.length() < length){
-        diff.add(restLength);
+    Vector force = Vector(0,0,0); // Force from link applied to nodes
+
+    Vector diff = end->minus(begin);    // Difference from Node positions
+    if (diff.length() > length) {           // Nodes of hair further away than length of hair -> must be pushed together
+        force = diff * springConstant;
+    } else if (diff.length() < length) {   // Nodes of hair closer togehter than length of hair, must be pushed away
+        force = diff * -1;
     }
 
-    // ToDo
-
-    return diff;
+    return force;
 };

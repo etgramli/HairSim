@@ -14,6 +14,13 @@ Vector& Vector::operator-=(const Vector& vector) {
     return *this;
 }
 
+Vector& Vector::operator*=(const float scalar) {
+    this->x *= scalar;
+    this->y *= scalar;
+    this->z *= scalar;
+    return *this;
+}
+
 
 float Vector::getX() const {
     return x;

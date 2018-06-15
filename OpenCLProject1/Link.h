@@ -4,7 +4,7 @@
 
 class Link {
 
-    //float springConstant;
+    float springConstant = 1.0f;
     const float length = 1.0f;
     float restLength;
     Node *begin, *end;

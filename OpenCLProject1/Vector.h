@@ -15,6 +15,7 @@ public:
 
     Vector& operator+=(const Vector& vector);
     Vector& operator-=(const Vector& vector);
+    Vector& operator*=(const float scalar);
 
     float getX() const;
 
@@ -50,5 +51,10 @@ inline Vector operator+(Vector lhs, const Vector &rhs) {
 
 inline Vector operator-(Vector lhs, const Vector &rhs) {
     lhs -= rhs;
+    return lhs;
+}
+
+inline Vector operator*(Vector lhs, const float scalar) {
+    lhs *= scalar;
     return lhs;
 }
