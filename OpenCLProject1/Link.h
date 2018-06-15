@@ -3,8 +3,7 @@
 #include "Node.h"
 
 class Link {
-
-    const float springConstant = 0.15f;
+    float springConstant = 0.15f;
     const float length = 1.0f;
     const float threshold;  // 5% of length
     Node *begin, *end;
