@@ -13,7 +13,8 @@ class Link {
     Node *begin, *end;
 
 public:
-    Link(Node *begin, Node *end, int num, float length = 1.0f): begin(begin), end(end), length(length), num(num), threshold(0.05 * length) {}
+    Link(Node *begin, Node *end, int num, float length = 1.0f, float springConstant = 0.05f)
+        : begin(begin), end(end), length(length), num(num), springConstant(springConstant), threshold(0.05 * length) {}
     ~Link() {}
     
     // Getter

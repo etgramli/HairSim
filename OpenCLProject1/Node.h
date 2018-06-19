@@ -6,8 +6,7 @@
 // Type definition must be the same as in kernel,
 // so that it can be copied from host to device
 typedef struct {
-    cl_float4 coordinates;
-    cl_float mass;
+    cl_float3 coordinates;
     cl_bool isConst;
 } cl_Node;
 
@@ -18,7 +17,8 @@ class Node {
     const bool isConstant;
 
 public:
-    Node(float x, float y, float z, float mass = 1.0f, bool isConst = false): x(x), y(y), z(z), isConstant(isConst) {}
+    Node(float x, float y, float z, bool isConst = false): x(x), y(y), z(z), isConstant(isConst) {}
+    Node(cl_Node node): x(node.coordinates.x), y(node.coordinates.y), z(node.coordinates.z), isConstant(node.isConst) {}
     ~Node() {}
 
     float getX();

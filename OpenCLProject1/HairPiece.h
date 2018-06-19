@@ -30,14 +30,17 @@ typedef struct {
 // Container class for multiple hair strings.
 class HairPiece {
 
-    std::vector<std::vector<Node*>> hairs;
+    std::unordered_set<Node *> nodes;
     std::unordered_set<Link*> links;
-
+    const size_t width, length;
+    const size_t hairlength;
     unsigned int getHairLength() const;
 
+    bool test(cl_HairPiece hp) const;
 
 public:
     HairPiece(size_t dimX = 5, size_t dimY = 5, size_t dimZ = 10);
+    HairPiece(cl_HairPiece hairPiece);
     ~HairPiece();
 
     Link* getOutgoingLinkFor(Node *node) const;
