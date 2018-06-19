@@ -17,7 +17,7 @@ public:
     BodySolverCPU(std::vector<Vector *> forces);
     ~BodySolverCPU();
 
-    void pSolve_Links();
+    void pSolve_Links(const float deltaSeconds);
 
     float getDeltaTime() const;
     void setDeltaTime(float deltaTime);

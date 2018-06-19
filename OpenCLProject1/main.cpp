@@ -127,6 +127,9 @@ cl::Context createContext(cl_device_type type, cl::Platform *platform) {
     return context;
 }
 
+int frameRate = 60;
+float frameTime = 1.0f / ((float)frameRate);
+
 void openGLWindow() {
 	Window * window = Window::getInstance();
 
@@ -136,18 +139,45 @@ void openGLWindow() {
 
 	initializeOpenGL();
 
-	clock_t lastInterval = clock();
+	bool render = false;
+	int frames = 0;
+	clock_t frameCounter = 0;
+	clock_t unprocessedTime = 0;
+	clock_t lastTime = clock();
 
 	while (window->isOpen())
 	{
-		window->setActive();
+		clock_t startTime = clock();
+		clock_t passedTime = startTime - lastTime;
+		lastTime = startTime;
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		unprocessedTime += passedTime;
+		frameCounter += passedTime;
 
-		drawOpenGL(window, lastInterval);
+		while (unprocessedTime > frameTime) {
+			render = true;
 
-		lastInterval = clock();
+			unprocessedTime -= frameTime;
 
-		window->swapBuffer();
+			if (frameCounter >= 1.0f) {
+				float totalTime = 1000.0f * frameCounter / (float)frames;
+
+				//printf("Total Time: %f ms\n", totalTime);
+				//printf("%f fps\n", frames);
+				frames = 0;
+				frameCounter = 0;
+			}
+		}
+
+		if (render) {
+			window->setActive();
+
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			drawOpenGL(window, ((float)frameTime));
+			lastTime = clock();
+
+			window->swapBuffer();
+			frames++;
+		}
 	}
 }

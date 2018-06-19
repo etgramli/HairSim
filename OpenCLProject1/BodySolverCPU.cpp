@@ -4,8 +4,8 @@
 
 BodySolverCPU::BodySolverCPU()
 {
-    Vector *gravity = new Vector(0.0f, 0.000f, -0.0008f);
-    this->forces.push_back(gravity);
+    //Vector *gravity = new Vector(0.0f, 0.000f, -0.0008f); // m * 9.81
+    //this->forces.push_back(gravity);
 }
 
 BodySolverCPU::BodySolverCPU(std::vector<Vector *> forces) {
@@ -36,36 +36,33 @@ Vector BodySolverCPU::addAllForces() {
     return sum;
 }
 
-void BodySolverCPU::pSolve_Links() {
+void BodySolverCPU::pSolve_Links(const float deltaSeconds) {
     // Loop through all links, because all links must have begin and end point
     for (Link *currentLink : this->hairPiece.getLinks()) {
         if (currentLink->getBegin() != NULL && currentLink->getEnd() != NULL) {
             Node *a = currentLink->getBegin();
             Node *b = currentLink->getEnd();
-            // Add up all forces to begin and end nodes
-            const Vector compinedForces = addAllForces();
-			Vector forcesNodeA = compinedForces * (0.1f * currentLink->getNum());
-			Vector forcesNodeB = compinedForces * (0.1f * currentLink->getNum());
 
+            // Add gravity
+			Vector gravitationalAcceleration = Vector(0.0f, 0.0f, -0.00981f);
+			Vector forcesNodeA = gravitationalAcceleration * a->getMass();
+			Vector forcesNodeB = gravitationalAcceleration * b->getMass();
+			
 			// add link force
 			Link *next = hairPiece.getOutgoingLinkFor(currentLink->getEnd());
 			if (next != NULL) {
 				const Vector linkForce = currentLink->getLinkForce(next);
-				next->getEnd()->move(linkForce * -1.0f);
+				next->getEnd()->move(linkForce * -1.0f, deltaSeconds);
 			}
-            const Vector springForce = currentLink->getSpringForce();
-			forcesNodeA -= springForce;
+
+			//add spring force
+            const Vector springForce = currentLink->getSpringForce(deltaSeconds);
+			//forcesNodeA -= springForce;
 			forcesNodeB += springForce;
-			
-			if (a->getZ() <= 0.0f) {
-				forcesNodeA = Vector(forcesNodeA.getX(), forcesNodeA.getY(), 0.0f);
-			}
-			if (b->getZ() <= 0.0f) {
-				forcesNodeB = Vector(forcesNodeB.getX(), forcesNodeB.getY(), 0.0f);
-			}
+
             // Move nodes
-			a->move(forcesNodeA);
-			b->move(forcesNodeB);
+			a->move(forcesNodeA, deltaSeconds);
+			b->move(forcesNodeB, deltaSeconds);
         }
     }
 }

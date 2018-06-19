@@ -6,7 +6,7 @@
 #define PI 3.14159265f
 
 class Link {
-	float springConstant = 0.05f; // rebuild when changed!!
+	float springConstant = 0.2f; // rebuild when changed!!
     const float length = 1.0f;
 	int num;
     const float threshold;  // 5% of length
@@ -24,6 +24,6 @@ public:
     Node* getBegin() const;
     Node* getEnd() const;
 
-    Vector getSpringForce();
+    Vector getSpringForce(float t);
 	Vector getLinkForce(Link * next);
 };

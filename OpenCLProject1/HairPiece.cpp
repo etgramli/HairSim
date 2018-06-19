@@ -15,11 +15,11 @@ HairPiece::HairPiece(size_t dimX, size_t dimY, size_t dimZ) {
 
             rowNodes.push_back(currentRowStartNode);
             for (size_t z = 1; z < dimZ; ++z) {
-				Node *currentNode = new Node(x, y, z * 1.0f);
+				Node *currentNode = new Node(x + 1, y + 1, z * 1.0f, 1.0f);
 				if (z == dimZ - 1) {
-					currentNode = new Node(x + 0.1f, y + 0.1f, z * 1.0f);////////////////+0.001f z * length
+					currentNode = new Node(x + 1, y + 1, z * 1.0f, 1.0f);////////////////+0.001f z * length
 				} else if (z == 1) {
-					currentNode = new Node(x , y, z * 1.0f, 0.0f, true);
+					currentNode = new Node(x , y, z * 1.0f, 1.0f, true);
 				}
                 Link *currentLink = new Link(rowNodes.back(), currentNode, dimZ - z);
                 this->links.insert(currentLink);

@@ -183,21 +183,21 @@ void initializeOpenGL()
 		hairColors.push_back(0.941f - r);
 		hairColors.push_back(0.745f - r);
 	}
-	updateHair();
+	updateHair(0);
 
 	g_shaderId = loadShaders("vertex.glsl", "fragment.glsl");
 }
 
-void drawOpenGL(Window const * const _window, clock_t const & _lastInterval)
+void drawOpenGL(Window const * const _window, float deltaSeconds)
 {
-	updateHair();
+	updateHair((float) deltaSeconds);
 
 	glUseProgram(g_shaderId);
 
-	GLfloat const rotationAngle = static_cast< GLfloat >(_lastInterval) / 1000.0f * 20.0f;
-	Matrix4x4 const rotationMatrix = Matrix4x4::rotate(Vector4(0.0f, 1.0f, 0.0f, 0.0f), DegreeAngle(rotationAngle));
+	//GLfloat const rotationAngle = static_cast< GLfloat >(_lastInterval) / 1000.0f * 20.0f;
+	//Matrix4x4 const rotationMatrix = Matrix4x4::rotate(Vector4(0.0f, 1.0f, 0.0f, 0.0f), DegreeAngle(rotationAngle));
 	Matrix4x4 const scalingMatrix = Matrix4x4::scale(100.0f, 100.0f, 100.0f);
-	Matrix4x4 const modelMatrix = rotationMatrix * scalingMatrix;
+	Matrix4x4 const modelMatrix = scalingMatrix; // rotationMatrix * 
 
 	Camera const camera = _window->getCamera();
 	Matrix4x4 const viewMatrix = camera.viewMatrix();
@@ -223,8 +223,8 @@ void drawOpenGL(Window const * const _window, clock_t const & _lastInterval)
 	glUseProgram(0);
 }
 
-void updateHair() {
-	bodySolver.pSolve_Links();
+void updateHair(const float deltaSeconds) {
+	bodySolver.pSolve_Links(deltaSeconds);
 	glGenVertexArrays(1, &g_vertexArrayId2);
 	glBindVertexArray(g_vertexArrayId2);
 
