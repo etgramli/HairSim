@@ -1,6 +1,5 @@
 #include "Link.h"
-#include <iostream>
-#include <math.h>
+
 
 Node* Link::getBegin() const {
     return begin;
@@ -15,17 +14,25 @@ Vector Link::getSpringForce() {
 
     Vector diff = end->minus(begin);    // Difference from Node positions
 	float diffLength = diff.length();
-    
+	diff.normalize();
     if (diffLength > length + threshold) {           // Nodes of hair further away than length of hair -> must be pushed together
-		force = diff * springConstant * abs(length - diffLength);
+		force = diff * springConstant * (length - diffLength);// * abs(length - diffLength);
     } else if (diffLength < length - threshold) {   // Nodes of hair closer togehter than length of hair, must be pushed away
-		force = diff * springConstant * abs(length - diffLength) * -1;
-    }
-
-	if (isnan(force.getX()) || isnan(force.getY()) || isnan(force.getZ())) {
-		return Vector(0, 0, 0);
+		force = diff * springConstant * (length - diffLength);
 	}
-	//std::cout << "SpringForce: (" << force.getX() << ", " << force.getY() << ", " << force.getZ() << ")" << std::endl;
-
+	else {
+		//force = Vector(0.0f, 0.0f, 0.005f);
+	}
     return force;
+};
+
+Vector Link::getLinkForce(Link * next) {
+	Vector force = Vector(0, 0, 0);
+	Vector a = begin->minus(end);
+	Vector b = next->end->minus(next->begin);
+	float angle = acos((a * b) / (a.length() * b.length())) * 180.0f / PI;
+	if (angle < 178 - next->getNum() * 4) {
+		force = (a + b) * (0.001f * next->getNum());
+	}
+	return force;
 };

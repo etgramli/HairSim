@@ -4,7 +4,7 @@
 
 BodySolverCPU::BodySolverCPU()
 {
-    Vector *gravity = new Vector(0.0f, 0.0f, -0.5f);
+    Vector *gravity = new Vector(0.0f, 0.000f, -0.0008f);
     this->forces.push_back(gravity);
 }
 
@@ -44,12 +44,28 @@ void BodySolverCPU::pSolve_Links() {
             Node *b = currentLink->getEnd();
             // Add up all forces to begin and end nodes
             const Vector compinedForces = addAllForces();
+			Vector forcesNodeA = compinedForces * (0.1f * currentLink->getNum());
+			Vector forcesNodeB = compinedForces * (0.1f * currentLink->getNum());
+
+			// add link force
+			Link *next = hairPiece.getOutgoingLinkFor(currentLink->getEnd());
+			if (next != NULL) {
+				const Vector linkForce = currentLink->getLinkForce(next);
+				next->getEnd()->move(linkForce * -1.0f);
+			}
             const Vector springForce = currentLink->getSpringForce();
-			const Vector forcesNodeA = compinedForces + springForce;
-			const Vector forcesNodeB = compinedForces - springForce;
+			forcesNodeA -= springForce;
+			forcesNodeB += springForce;
+			
+			if (a->getZ() <= 0.0f) {
+				forcesNodeA = Vector(forcesNodeA.getX(), forcesNodeA.getY(), 0.0f);
+			}
+			if (b->getZ() <= 0.0f) {
+				forcesNodeB = Vector(forcesNodeB.getX(), forcesNodeB.getY(), 0.0f);
+			}
             // Move nodes
-            a->move(forcesNodeA);
-            b->move(forcesNodeB);
+			a->move(forcesNodeA);
+			b->move(forcesNodeB);
         }
     }
 }

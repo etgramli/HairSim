@@ -16,6 +16,7 @@ public:
     Vector& operator+=(const Vector& vector);
     Vector& operator-=(const Vector& vector);
     Vector& operator*=(const float scalar);
+	float operator*(const Vector &vector);
 
     float getX() const;
 

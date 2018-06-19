@@ -21,6 +21,10 @@ Vector& Vector::operator*=(const float scalar) {
     return *this;
 }
 
+float Vector::operator*(const Vector& vector) {
+	return this->x * vector.getX() + this->y * vector.getY() + this->z * vector.getZ();
+}
+
 
 float Vector::getX() const {
     return x;

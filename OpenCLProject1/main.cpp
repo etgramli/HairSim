@@ -31,7 +31,7 @@ void openGLWindow();
 int main() {
     cl_int err = CL_SUCCESS;
 
-    HairPiece hp = HairPiece(10,10,10);
+    HairPiece hp = HairPiece(10,10,100);
 
     // ---- SETUP ----
     cl::Platform plat = getPlatform(CL_DEVICE_TYPE_GPU, 1, prefferedOpenClVendors);
