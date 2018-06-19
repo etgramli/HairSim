@@ -20,7 +20,7 @@ public:
     float getSpringConstant() const {return springConstant;}
     float getLength() const {return length;}
     float getTreshold() const {return threshold;}
-	int getNum() { return num; }
+	int getNum() const { return num; }
     Node* getBegin() const;
     Node* getEnd() const;
 
