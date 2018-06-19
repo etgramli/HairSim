@@ -1,13 +1,11 @@
 #include "Node.h"
 
 cl_Node Node::getClData() {
-    cl_float3 coordinates;
-    coordinates.s0 = x;
-    coordinates.s1 = y;
-    coordinates.s2 = z;
-
     cl_Node node;
-    node.coordinates = coordinates;
+    node.coordinates = cl_float3();
+    node.coordinates.x = x;
+    node.coordinates.y = y;
+    node.coordinates.z = z;
     node.isConst = isConstant ? CL_TRUE : CL_FALSE;
 
     return node;

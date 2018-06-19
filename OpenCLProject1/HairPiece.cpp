@@ -1,65 +1,67 @@
+#include <iostream>
+
 #include "HairPiece.h"
 
-HairPiece::HairPiece(size_t dimX, size_t dimY, size_t dimZ) {
-
-	std::vector<Node *> startNodes;
+HairPiece::HairPiece(size_t dimX, size_t dimY, size_t dimZ)
+    : width(dimX), length(dimY), hairlength(dimZ) {
 
     for (size_t x = 0; x < dimX; ++x) {
-        std::vector<Node*> rowNodes;
         for (size_t y = 0; y < dimY; ++y) {
-            Node *currentRowStartNode = new Node(x, y, 0.0, 0.0, true);
-			
-			
-			startNodes.push_back(currentRowStartNode);
+            Node *currentRowStartNode = new Node(x, y, 0.0, true);
+            nodes.insert(currentRowStartNode);
 
-
-            rowNodes.push_back(currentRowStartNode);
+            Node *previousNode = currentRowStartNode;
             for (size_t z = 1; z < dimZ; ++z) {
-				Node *currentNode = new Node(x + 1, y + 1, z * 1.0f, 1.0f);
+				Node *currentNode;
 				if (z == dimZ - 1) {
-					currentNode = new Node(x + 1, y + 1, z * 1.0f, 1.0f);////////////////+0.001f z * length
+					currentNode = new Node(x + 1, y + 1, z * 1.0f, 1.0f);
 				} else if (z == 1) {
-					currentNode = new Node(x , y, z * 1.0f, 1.0f, true);
+					currentNode = new Node(x, y, z * 1.0f, 1.0f, true);
 				}
-                Link *currentLink = new Link(rowNodes.back(), currentNode, dimZ - z);
+				else {
+					currentNode = new Node(x + 1, y + 1, z * 1.0f, 1.0f);
+                }
+                nodes.insert(currentNode);
+                Link *currentLink = new Link(previousNode, currentNode, dimZ - z);
                 this->links.insert(currentLink);
-
-                rowNodes.push_back(currentNode);
+                previousNode = currentNode;
             }
         }
-        hairs.push_back(rowNodes);
     }
-
-	/*for (Node *current : startNodes) {
-		for (Node *c : startNodes) {
-			Link *newLink = new Link(current, c);
-			links.insert(newLink);
-		}
-	}*/
 }
 
-HairPiece::~HairPiece() {
-    for (size_t x = 0; x < hairs.size(); ++x) {
-        std::vector<Node*> rowNodes = hairs[x];
-        for (size_t y = 0; y < rowNodes.size(); ++y) {
-            Node *currentNode = rowNodes.back();
-            Link *currentLink = NULL;
-            while ((currentLink = getOutgoingLinkFor(currentNode)) != NULL) {
-                // ToDo: Über Links hängeln
-                delete(currentNode);
-                currentNode = currentLink->getEnd();
-                links.erase(currentLink);
-                delete(currentLink);
-            }
-        }
+HairPiece::HairPiece(cl_HairPiece hairPiece): width(hairPiece.sizeX), length(hairPiece.sizeY), hairlength(hairPiece.sizeZ) {
+    std::map<int, Node *> indexToNode;
+    for (int i = 0; i < hairPiece.numNodes; ++i) {
+        Node *currentNode = new Node(hairPiece.nodes[i]);
+        nodes.insert(currentNode);
+        indexToNode.emplace(i, currentNode);
     }
-    // Todo: Cleanup Nodes and Links
+
+    for (int i = 0; i < hairPiece.numLinks; ++i) {
+        cl_Link currentClLink = hairPiece.links[i];
+        Link *currentLink = new Link(
+            indexToNode[currentClLink.beginNodeId],
+            indexToNode[currentClLink.endNodeId],
+            currentClLink.num,
+            currentClLink.length,
+            currentClLink.springConstant);
+        links.insert(currentLink);
+    }
+}
+
+
+HairPiece::~HairPiece() {
+    for (Node *currentNode : nodes) {
+        delete(currentNode);
+    }
+    
     for (Link *current : links) {
         delete(current);
     }
 }
 
-Link* HairPiece::getOutgoingLinkFor(Node *node) {
+Link* HairPiece::getOutgoingLinkFor(Node *node) const {
     if (node == NULL) {
         return NULL;
     }
@@ -71,12 +73,12 @@ Link* HairPiece::getOutgoingLinkFor(Node *node) {
     return NULL;
 }
 
-Node* HairPiece::getNextNodeFor(Node *node) {
+Node* HairPiece::getNextNodeFor(Node *node) const {
     if (node == NULL) {
         return NULL;
     }
 
-    Link *outGoingLink = getOutgoingLinkFor(node);
+    Link const * const outGoingLink = getOutgoingLinkFor(node);
     if (outGoingLink == NULL) {
         return NULL;
     } else {
@@ -84,23 +86,13 @@ Node* HairPiece::getNextNodeFor(Node *node) {
     }
 }
 
-std::vector<std::vector<Node*>> HairPiece::getStartNodes() {
-    return this->hairs;
-}
-
 std::unordered_set<Link *> HairPiece::getLinks() {
     return links;
 }
 
 // Length in Nodes
-unsigned int HairPiece::getHairLength() {
-    Node *startNode = hairs[0][0];
-    unsigned int length = 1;
-    Node *currentNode = startNode;
-    while ((currentNode = getNextNodeFor(currentNode)) != NULL) {
-        ++length;
-    }
-    return length;
+unsigned int HairPiece::getHairLength() const {
+    return hairlength;
 }
 
 std::vector<float> HairPiece::getCoordinatesForGL() {
@@ -122,45 +114,57 @@ std::vector<float> HairPiece::getCoordinatesForGL() {
 
 
 
-
-std::vector<cl_Node> HairPiece::getNodesAsVector(std::map<Node *, int> *nodeAddressesToIndex) {
-    std::vector<cl_Node> clNodes;
-
-    for (size_t x = 0; x < hairs.size(); ++x) {
-        std::vector<Node*> rowNodes = hairs[x];
-        for (size_t y = 0; y < rowNodes.size(); ++y) {
-            Node *currentNode = rowNodes[y];
-            clNodes.push_back(currentNode->getClData());
-            nodeAddressesToIndex->insert(std::pair<Node *, int>(currentNode, clNodes.size()));
-        }
-    }
-    return clNodes;
-}
-
-cl_Link HairPiece::getLinkClData(const Link * const link, std::map<Node *, int> nodeAddressToId) {
-    cl_Link cl_link;
-
-    cl_link.length = link->getLength();
-    cl_link.springConstant = link->getSpringConstant();
-    cl_link.threshold = link->getTreshold();
-
-    cl_link.beginNodeId = nodeAddressToId[link->getBegin()];
-    cl_link.endNodeId = nodeAddressToId[link->getEnd()];
-
-    return cl_link;
-}
-
-
-cl_HairPiece HairPiece::getClData() {
+cl_HairPiece HairPiece::getClData() const {
     cl_HairPiece cl_hairPiece;
 
-    cl_hairPiece.sizeX = hairs.size();
-    cl_hairPiece.sizeY = hairs.at(0).size();
+    cl_hairPiece.sizeX = width;
+    cl_hairPiece.sizeY = length;
     cl_hairPiece.sizeZ = getHairLength();
 
     cl_hairPiece.numLinks = links.size();
+    cl_hairPiece.links = new cl_Link[cl_hairPiece.numLinks];
+
+    cl_hairPiece.numNodes = cl_hairPiece.sizeX * cl_hairPiece.sizeY * cl_hairPiece.sizeZ;
+    cl_hairPiece.nodes = new cl_Node[cl_hairPiece.numNodes];
 
     // ToDo: Copy Buffers to Device and get Addresses correctly
+    std::map<Node *, int> nodeToId; // Map to map node addresses to IDs in the array on device
+    unsigned int nodeCounter = 0;
+    for (Node *currentNode : nodes) {
+        // Copy cl data of node to cl_hairPiece
+        cl_hairPiece.nodes[nodeCounter] = currentNode->getClData();
+        
+        nodeToId.emplace(currentNode, nodeCounter); // Add mapping
+        ++nodeCounter;
+    }
+    std::cout << "Created " << nodeCounter << " nodes for copying to CL device!" << std::endl;
+    std::cout << "Originally " << cl_hairPiece.numNodes << " nodes exist!" << std::endl << std::endl;
+
+    unsigned int linkCounter = 0;
+    for (Link *currentLink : links) {
+        cl_hairPiece.links[linkCounter] = cl_Link();
+        cl_hairPiece.links[linkCounter].beginNodeId = nodeToId[currentLink->getBegin()];
+        cl_hairPiece.links[linkCounter].endNodeId = nodeToId[currentLink->getEnd()];
+        cl_hairPiece.links[linkCounter].length = currentLink->getLength();
+        cl_hairPiece.links[linkCounter].num = currentLink->getNum();
+        cl_hairPiece.links[linkCounter].springConstant = currentLink->getSpringConstant();
+        cl_hairPiece.links[linkCounter].threshold = currentLink->getTreshold();
+
+        ++linkCounter;
+    }
+    std::cout << "Created " << linkCounter << " links for copying to CL device!" << std::endl;
+    std::cout << "Originally " << cl_hairPiece.numLinks << " links exist!" << std::endl << std::endl;
+
 
     return cl_hairPiece;
+}
+
+void HairPiece::cleanUpClData(cl_HairPiece hairPiece) const {
+    delete[] hairPiece.links;
+    delete[] hairPiece.nodes;
+}
+
+bool HairPiece::test(cl_HairPiece hp) const {
+    // ToDo
+    return false;
 }

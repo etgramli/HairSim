@@ -75,6 +75,10 @@ int main() {
         std::cout << e.what() << std::endl;
     }
 
+    HairPiece tempHP;
+    cl_HairPiece cl_hp = tempHP.getClData();
+    tempHP.cleanUpClData(cl_hp);
+
     return 0;
 }
 
