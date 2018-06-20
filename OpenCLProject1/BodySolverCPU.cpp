@@ -49,15 +49,14 @@ void BodySolverCPU::pSolve_Links(const float deltaSeconds) {
 			Vector forcesNodeB = gravitationalAcceleration * b->getMass();
 			
 			// add link force
-			Link *next = hairPiece.getOutgoingLinkFor(currentLink->getEnd());
-			if (next != NULL) {
-				const Vector linkForce = currentLink->getLinkForce(next);
-				next->getEnd()->move(linkForce * -1.0f, deltaSeconds);
+			Link *pre = hairPiece.getIngoingLinkFor(currentLink->getBegin());
+			if (pre != NULL) {
+				const Vector linkForce = currentLink->getLinkForce(pre);
+				forcesNodeB -= linkForce;
 			}
 
 			//add spring force
             const Vector springForce = currentLink->getSpringForce(deltaSeconds);
-			//forcesNodeA -= springForce;
 			forcesNodeB += springForce;
 
             // Move nodes

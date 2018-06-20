@@ -73,6 +73,18 @@ Link* HairPiece::getOutgoingLinkFor(Node *node) const {
     return NULL;
 }
 
+Link* HairPiece::getIngoingLinkFor(Node *node) const {
+	if (node == NULL) {
+		return NULL;
+	}
+	for (Link *current : links) {
+		if (current->getEnd() == node) {
+			return current;
+		}
+	}
+	return NULL;
+}
+
 Node* HairPiece::getNextNodeFor(Node *node) const {
     if (node == NULL) {
         return NULL;

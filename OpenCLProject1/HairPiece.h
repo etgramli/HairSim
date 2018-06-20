@@ -44,6 +44,7 @@ public:
     ~HairPiece();
 
     Link* getOutgoingLinkFor(Node *node) const;
+	Link* getIngoingLinkFor(Node *node) const;
     Node* getNextNodeFor(Node *node) const;
     std::vector<std::vector<Node*>> getStartNodes();
     std::unordered_set<Link *> getLinks();

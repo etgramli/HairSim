@@ -24,13 +24,13 @@ Vector Link::getSpringForce(float t) {
     return force;
 };
 
-Vector Link::getLinkForce(Link * next) {
+Vector Link::getLinkForce(Link * pre) {
 	Vector force = Vector(0, 0, 0);
 	
-	Vector a = begin->minus(end);
-	Vector b = next->end->minus(next->begin);
+	Vector a = pre->begin->minus(pre->end);
+	Vector b = end->minus(begin);
 	float angle = acos((a * b) / (a.length() * b.length())) * 180.0f / PI;
-	if (angle < 180 - next->getNum() * 4) {
+	if (angle < 160) {
 		force = (a + b) * 0.05f;
 	}
 
