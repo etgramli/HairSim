@@ -13,25 +13,27 @@ typedef struct {
 
 class Node {
 
-    float x, y, z;
+    float x, y, z, mass;
     const bool isConstant;
+	Vector velocity;
 
 public:
-    Node(float x, float y, float z, bool isConst = false): x(x), y(y), z(z), isConstant(isConst) {}
-    Node(const cl_Node &node)
-        : x(node.coordinates.x), y(node.coordinates.y), z(node.coordinates.z), isConstant(node.isConst) {}
+    Node(float x, float y, float z, float mass = 1.0f, bool isConst = false, Vector velocity = Vector(0,0,0)): x(x), y(y), z(z), mass(mass), isConstant(isConst), velocity(velocity) {}
+    Node(cl_Node node): x(node.coordinates.x), y(node.coordinates.y), z(node.coordinates.z), isConstant(node.isConst) {}
     ~Node() {}
 
     float getX();
     float getY();
     float getZ();
+	float getMass();
     bool isConst();
+	Vector getVelocity();
 
     void setPosition(float x, float y, float z);
 
     Vector minus(Node *b);
 
-    void move(Vector force);
+    void move(Vector force, float deltaSeconds);
 
     cl_Node getClData();
 };

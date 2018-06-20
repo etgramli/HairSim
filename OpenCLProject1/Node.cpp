@@ -21,8 +21,14 @@ float Node::getY() {
 float Node::getZ() {
     return z;
 }
+float Node::getMass() {
+	return mass;
+}
 bool Node::isConst() {
     return isConstant;
+}
+Vector Node::getVelocity() {
+	return velocity;
 }
 
 void Node::setPosition(float x, float y, float z) {
@@ -41,11 +47,27 @@ Vector Node::minus(Node *b) {
     }
 }
 
-void Node::move(Vector force) {
+void Node::move(Vector force, float deltaSeconds) {
     if (isConstant) {
         return;
     }
-    x += force.getX();
+	Vector v = force * (deltaSeconds / mass) + (velocity * 0.9f);// damping factor
+	x += v.getX();
+	y += v.getY();
+	z += v.getZ();
+	if (v.getZ() != 0) {
+		//printf("%f %f %f\n", v.getX(), v.getY(), v.getZ());
+		//printf("%f\n", deltaSeconds);
+	}
+	velocity = v;
+
+	if (z <= 0) {
+		z = 0;
+		if (velocity.getZ() <= 0) {
+			velocity = Vector(velocity.getX(), velocity.getY(), 0);
+		}
+	}
+	/*x += force.getX();
     y += force.getY();
-    z += force.getZ();
+    z += force.getZ();*/
 }

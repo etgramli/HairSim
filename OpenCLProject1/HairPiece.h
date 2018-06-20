@@ -4,6 +4,7 @@
 #include <map>
 #include "Node.h"
 #include "Link.h"
+#include <time.h>
 
 typedef struct {
     //IDs in the array of the cl_Nodes
@@ -34,6 +35,7 @@ class HairPiece {
     std::vector<Link*> links;
     size_t width, length;
     size_t hairlength;
+	const float linkLength = 1.0f;
     unsigned int getHairLength() const;
 
 
@@ -69,6 +71,7 @@ public:
     }
 
     Link* getOutgoingLinkFor(Node *node) const;
+	Link* getIngoingLinkFor(Node *node) const;
     Node* getNextNodeFor(Node *node) const;
     std::vector<Link *> getLinks();
 
