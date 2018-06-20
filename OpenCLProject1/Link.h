@@ -15,6 +15,9 @@ class Link {
 public:
     Link(Node *begin, Node *end, int num, float length = 1.0f, float springConstant = 0.05f)
         : begin(begin), end(end), length(length), num(num), springConstant(springConstant), threshold(0.05 * length) {}
+    Link(const Link &link2)
+        : begin(link2.getBegin()), end(link2.getEnd()), springConstant(link2.getSpringConstant()),
+        length(link2.getLength()), num(link2.getNum()), threshold (link2.getTreshold()) {}
     ~Link() {}
     
     // Getter

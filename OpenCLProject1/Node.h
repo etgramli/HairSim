@@ -18,7 +18,8 @@ class Node {
 
 public:
     Node(float x, float y, float z, bool isConst = false): x(x), y(y), z(z), isConstant(isConst) {}
-    Node(cl_Node node): x(node.coordinates.x), y(node.coordinates.y), z(node.coordinates.z), isConstant(node.isConst) {}
+    Node(const cl_Node &node)
+        : x(node.coordinates.x), y(node.coordinates.y), z(node.coordinates.z), isConstant(node.isConst) {}
     ~Node() {}
 
     float getX();

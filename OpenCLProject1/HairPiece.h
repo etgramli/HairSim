@@ -30,28 +30,64 @@ typedef struct {
 // Container class for multiple hair strings.
 class HairPiece {
 
-    std::unordered_set<Node *> nodes;
-    std::unordered_set<Link*> links;
-    const size_t width, length;
-    const size_t hairlength;
+    std::vector<Node *> nodes;
+    std::vector<Link*> links;
+    size_t width, length;
+    size_t hairlength;
     unsigned int getHairLength() const;
 
-    bool test(cl_HairPiece hp) const;
 
 public:
     HairPiece(size_t dimX = 5, size_t dimY = 5, size_t dimZ = 10);
     HairPiece(cl_HairPiece hairPiece);
     ~HairPiece();
 
+    HairPiece& operator=(const HairPiece& hairPiece2) {
+        if (this == &hairPiece2) {
+            return *this;
+        }
+        if (links.size() > 0) {
+            for (Link *current : links) {
+                delete current;
+            }
+            links.clear();
+        }
+        if (nodes.size() > 0) {
+            for (Node *current : nodes) {
+                delete current;
+            }
+            nodes.clear();
+        }
+
+        for (Node *node : hairPiece2.nodes) {
+            nodes.push_back(new Node(*node));
+        }
+        for (Link *link : hairPiece2.links) {
+            links.push_back(new Link(*link));
+        }
+        return *this;
+    }
+
     Link* getOutgoingLinkFor(Node *node) const;
     Node* getNextNodeFor(Node *node) const;
-    std::vector<std::vector<Node*>> getStartNodes();
-    std::unordered_set<Link *> getLinks();
+    std::vector<Link *> getLinks();
+
+    size_t getIndexOfNode(Node *node) const {
+        ptrdiff_t pos = find(nodes.begin(), nodes.end(), node) - nodes.begin();
+        if (pos >= nodes.size()) {
+            return -1;
+        } else {
+            return pos;
+        }
+    }
 
 
     std::vector<float> getCoordinatesForGL();
 
 
     cl_HairPiece getClData() const;
-    void cleanUpClData(cl_HairPiece hairPiece) const;
+    static cl_Link getClLinkForLink(Link const * const link, std::map<Node *, int> * const nodeAddressToId);
+    static void cleanUpClData(cl_HairPiece hairPiece);
+
+    bool test(cl_HairPiece hp) const;
 };

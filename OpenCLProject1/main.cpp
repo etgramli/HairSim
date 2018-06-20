@@ -31,6 +31,20 @@ void openGLWindow();
 int main() {
     cl_int err = CL_SUCCESS;
 
+
+    // TESTING
+    HairPiece hptest;
+    cl_HairPiece cl_hp = hptest.getClData();
+    if (hptest.test(cl_hp)) {
+        std::cout << "SUCCESS!";
+    } else {
+        std::cout << "ERROR!";
+        return -1;
+    }
+
+
+
+
     HairPiece hp = HairPiece(10,10,100);
 
     // ---- SETUP ----
@@ -74,10 +88,6 @@ int main() {
     } catch (std::exception& e) {
         std::cout << e.what() << std::endl;
     }
-
-    HairPiece tempHP;
-    cl_HairPiece cl_hp = tempHP.getClData();
-    tempHP.cleanUpClData(cl_hp);
 
     return 0;
 }

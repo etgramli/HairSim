@@ -1,7 +1,7 @@
 #pragma once
 #include "CL\cl.hpp"
 
-#include "Link.h"
+#include "HairPiece.h"
 
 
 class BodySolver
@@ -20,7 +20,7 @@ public:
                                float ti);
 private:
     // Data
-    std::vector<Link *> links;
+    HairPiece hp;
 
     // OpenCL
     cl::Context *context;
@@ -31,4 +31,3 @@ private:
     cl::Program program;
     cl::Kernel kernel;
 };
-
