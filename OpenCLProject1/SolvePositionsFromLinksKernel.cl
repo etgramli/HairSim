@@ -1,41 +1,69 @@
 // Type definition must be the same as in kernel,
 // so that it can be copied from host to device
 typedef struct {
-    cl_float4 coordinates;
-    cl_bool isConst;
-} cl_Node;
+    float3 coordinates;
+    float3 velocity;
+    bool isConst;
+    float mass;
+} Node;
 
-// TODO: Add OpenCL kernel code here.
+typedef struct {
+    //IDs in the array of the cl_Nodes
+    uint beginNodeId, endNodeId;
 
-__kernel void SolvePositionsFromLinksKernel(const int startLink,
-                                            const int numLinks,
-                                            const float kst,
-                                            const float ti,
-                                            __global int2 * g_linksVertexIndices,
-                                            __global float * g_linksMassLSC,
-                                            __global float * g_linksRestLengthSquared,
-                                            __global float * g_verticesInverseMass,
-                                            __global float4 * g_vertexPositions) {
-    int linkID = get_global_id(0) + startLink;
-    if( get_global_id(0) < numLinks ) {
-        float massLSC = g_linksMassLSC[linkID];
-        float restLengthSquared = g_linksRestLengthSquared[linkID];
-        if( massLSC > 0.0f ) {
-            int2 nodeIndices = g_linksVertexIndices[linkID];
-            int node0 = nodeIndices.x;
-            int node1 = nodeIndices.y;
-            float3 position0 = g_vertexPositions[node0].xyz;
-            float3 position1 = g_vertexPositions[node1].xyz;
-            float inverseMass0 = g_verticesInverseMass[node0];
-            float inverseMass1 = g_verticesInverseMass[node1]; 
-            float3 del = position1 - position0;
-            float len  = dot(del, del);
-            float k    = ((restLengthSquared -
-                len)/(massLSC*(restLengthSquared+len)))*kst;
-            position0 = position0 - del*(k*inverseMass0);
-            position1 = position1 + del*(k*inverseMass1);
-            g_vertexPositions[node0] = (float4)(position0, 0.f);
-            g_vertexPositions[node1] = (float4)(position1, 0.f);
-        }
+    float springConstant;
+    float length;
+} Link;
+
+typedef struct {
+    uint sizeX;
+    uint sizeY;
+    uint sizeZ;
+
+    uint numLinks;   // Number of links in the array below
+    Link *links;     // Array of links that can be copied directly to the device
+
+    uint numNodes;   // Number of nodes in the array below
+    Node *nodes;     // Array of nodes to be copied directly to the device
+} HairPiece;
+
+// Each launched kernel handles one link and therefore two nodes
+__kernel void SolvePositionsFromLinksKernel(__global HairPiece *hairPiece,
+                                            __global float3 *forces,
+                                            float deltaSeconds) {
+    unsigned int i = get_global_id(0);
+    Link *currentLink = &hairPiece->links[i];
+
+    uint a_id = currentLink->beginNodeId;
+    uint b_id = currentLink->endNodeId;
+    Node *a = &hairPiece->nodes[a_id];
+    Node *b = &hairPiece->nodes[b_id];
+
+    // add gravity
+    float3 gravitationalAcceleration = float3(0.0f, 0.0f, -0.00981f);
+    float3 forcesNodeA = gravitationalAcceleration * a->getMass();
+    float3 forcesNodeB = gravitationalAcceleration * b->getMass();
+
+    // add link force
+    Link *pre = hairPiece->getIngoingLinkFor(currentLink->getBegin());
+    if (pre != NULL) {
+        const Vector linkForce = currentLink->getLinkForce(pre);
+        forcesNodeB -= linkForce;
     }
+
+    //add spring force
+    const Vector springForce = currentLink->getSpringForce(deltaSeconds);
+    forcesNodeB += springForce;
+
+    // add wind
+    deltaTime += deltaSeconds;
+
+    const Vector windForce = Vector(0.09f, -0.08f, 0.05f) * (sin(deltaTime * 0.02f) + 1.0f);
+
+    forcesNodeA += windForce;
+    forcesNodeB += windForce;
+
+    // Move nodes
+    a->move(forcesNodeA, deltaSeconds);
+    b->move(forcesNodeB, deltaSeconds);
 }

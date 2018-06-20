@@ -12,8 +12,6 @@ typedef struct {
 
     cl_float springConstant;
     cl_float length;
-    cl_int num;
-    cl_float threshold;  // 5% of length
 } cl_Link;
 
 typedef struct {

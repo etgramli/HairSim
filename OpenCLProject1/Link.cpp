@@ -1,6 +1,14 @@
 #include "Link.h"
 
 
+float Link::getSpringConstant() const {
+    return springConstant;
+}
+
+float Link::getLength() const {
+    return length;
+}
+
 Node* Link::getBegin() const {
     return begin;
 }

@@ -25,7 +25,7 @@ HairPiece::HairPiece(size_t dimX, size_t dimY, size_t dimZ)
 					currentNode = new Node(x, y, z * linkLength, 1.0f + r);
                 }
                 nodes.push_back(currentNode);
-                Link *currentLink = new Link(previousNode, currentNode, dimZ - z, linkLength + r);
+                Link *currentLink = new Link(previousNode, currentNode, linkLength + r);
                 links.push_back(currentLink);
                 previousNode = currentNode;
             }
@@ -57,7 +57,6 @@ HairPiece::HairPiece(cl_HairPiece hairPiece) {
         Link *currentLink = new Link(
             indexToNode[currentClLink.beginNodeId],
             indexToNode[currentClLink.endNodeId],
-            currentClLink.num,
             currentClLink.length,
             currentClLink.springConstant);
         links.push_back(currentLink);
@@ -190,9 +189,7 @@ cl_Link HairPiece::getClLinkForLink(Link const * const link, std::map<Node *, in
     //std::cout << "Queried mapping: (" << currentLink->getBegin() << " -> " << nodeToId[currentLink->getBegin()] << ")" << std::endl;
     clLink.endNodeId      = (*nodeAddressToId)[link->getEnd()];
     clLink.length         = link->getLength();
-    clLink.num            = link->getNum();
     clLink.springConstant = link->getSpringConstant();
-    clLink.threshold      = link->getTreshold();
     return clLink;
 }
 
@@ -253,7 +250,6 @@ bool HairPiece::test(HairPiece *other) const {
         size_t endClNodeIdx = other->getIndexOfNode(clLink->getEnd());
 
         if (myLink->getLength() != clLink->getLength() ||
-            myLink->getNum() != clLink->getNum() ||
             myLink->getSpringConstant() != clLink->getSpringConstant() ||
             beginNodeIdx != beginClNodeIdx ||
             endNodeIdx != endClNodeIdx) {
@@ -312,10 +308,8 @@ bool HairPiece::test(cl_HairPiece hp) const {
         size_t endClNodeIdx = clLink.endNodeId;
 
         Link clLinkConverted = Link(
-            NULL, NULL,
-            clLink.num, clLink.length, clLink.springConstant);
+            NULL, NULL, clLink.length, clLink.springConstant);
         if (myLink->getLength() != clLinkConverted.getLength() ||
-            myLink->getNum() != clLinkConverted.getNum() ||
             myLink->getSpringConstant() != clLinkConverted.getSpringConstant() ||
             beginNodeIdx != beginClNodeIdx ||
             endNodeIdx != endClNodeIdx) {
