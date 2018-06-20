@@ -40,7 +40,7 @@ HairPiece::HairPiece(cl_HairPiece hairPiece) {
     for (int i = 0; i < hairPiece.numNodes; ++i) {
         Node *currentNode = new Node(hairPiece.nodes[i]);
 
-        std::cout << "Created Node(" << currentNode->getX() << ", " << currentNode->getY()<<", " << currentNode->getZ() << ")" << std::endl;
+        //std::cout << "Created Node(" << currentNode->getX() << ", " << currentNode->getY()<<", " << currentNode->getZ() << ")" << std::endl;
 
 
         nodes.push_back(currentNode);
@@ -147,8 +147,8 @@ cl_HairPiece HairPiece::getClData() const {
         // Copy cl data of node to cl_hairPiece
         cl_hairPiece.nodes[i] = currentNode->getClData();
         
-        std::cout << "Node1(" << currentNode->getX() << ", " << currentNode->getY()<<", " << currentNode->getZ() << ")" << std::endl;
-        std::cout << "Node2(" << cl_hairPiece.nodes[i].coordinates.x << ", " << cl_hairPiece.nodes[i].coordinates.y <<", " << cl_hairPiece.nodes[i].coordinates.z << ")" << std::endl;
+        //std::cout << "Node1(" << currentNode->getX() << ", " << currentNode->getY()<<", " << currentNode->getZ() << ")" << std::endl;
+        //std::cout << "Node2(" << cl_hairPiece.nodes[i].coordinates.x << ", " << cl_hairPiece.nodes[i].coordinates.y <<", " << cl_hairPiece.nodes[i].coordinates.z << ")" << std::endl;
 
         nodeToId[currentNode] = i; // Add mapping
         //std::cout << "Node-to-id mapping: (" << currentNode << " -> " << nodeCounter << ")" << std::endl;
@@ -185,8 +185,77 @@ void HairPiece::cleanUpClData(cl_HairPiece hairPiece) {
     delete[] hairPiece.nodes;
 }
 
-bool HairPiece::test(cl_HairPiece hp) const {
+
+
+
+
+
+
+
+
+
+
+bool HairPiece::test(HairPiece *other) const {
+    if (other->getNumberOfNodes() != this->getNumberOfNodes()) {
+        std::cout << std::endl
+            << "Number of nodes are not Equal! (" << nodes.size()
+            << " v s" << other->getNumberOfNodes()
+            << std::endl << std::endl;
+        return false;
+    }
+    for (int i = 0; i < nodes.size(); ++i) {
+        Node *myCurrentNode = nodes[i];
+        Node *otherCurrentNode = other->getNode(i);
+        if (otherCurrentNode->getX() != myCurrentNode->getX() ||
+            otherCurrentNode->getY() != myCurrentNode->getY() ||
+            otherCurrentNode->getZ() != myCurrentNode->getZ()) {
+            std::cout << "Nodes are DIFFERENT at index: " << i << std::endl;
+            std::cout << "Node1(" << myCurrentNode->getX() << ", " << myCurrentNode->getY()<<", " << myCurrentNode->getZ() << ")" << std::endl;
+            std::cout << "Node2(" << otherCurrentNode->getX() << ", " << otherCurrentNode->getY()<<", " << otherCurrentNode->getZ() << ")" << std::endl;
+            return false;
+        }
+    }
+
+    std::cout << "All nodes ar EQUAL" << std::endl;
+
     
+    if (other->getNumberOfLinks() != this->getNumberOfLinks()) {
+        std::cout << std::endl
+            << "Number of links are not Equal! (" << this->getNumberOfLinks()
+            << " v s" << other->getNumberOfLinks()
+            << std::endl << std::endl;
+        return false;
+    }
+    for (int i = 0; i < links.size(); ++i) {
+        // Compare
+        Link *myLink = links[i];
+        Link *clLink = other->getLink(i);
+
+        size_t beginNodeIdx = getIndexOfNode(myLink->getBegin());
+        size_t endNodeIdx = getIndexOfNode(myLink->getEnd());
+        size_t beginClNodeIdx = other->getIndexOfNode(clLink->getBegin());
+        size_t endClNodeIdx = other->getIndexOfNode(clLink->getEnd());
+
+        if (myLink->getLength() != clLink->getLength() ||
+            myLink->getNum() != clLink->getNum() ||
+            myLink->getSpringConstant() != clLink->getSpringConstant() ||
+            beginNodeIdx != beginClNodeIdx ||
+            endNodeIdx != endClNodeIdx) {
+            std::cout << "Links are DIFFERENT at index: " << i << std::endl;
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+
+
+
+
+
+bool HairPiece::test(cl_HairPiece hp) const {
     if (hp.numNodes != this->nodes.size()) {
         std::cout << std::endl
             << "Number of nodes are not Equal! (" << nodes.size()
@@ -207,9 +276,8 @@ bool HairPiece::test(cl_HairPiece hp) const {
             return false;
         }
     }
+    std::cout << "All Nodes are EQUAL!" << std::endl;
 
-
-    // ToDo: Test Links
     if (hp.numLinks != links.size()) {
         std::cout << std::endl
             << "Number of links are not Equal! (" << links.size()

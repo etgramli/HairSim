@@ -33,15 +33,23 @@ int main() {
 
 
     // TESTING
+    
     HairPiece hptest;
+    
     cl_HairPiece cl_hp = hptest.getClData();
-    if (hptest.test(cl_hp)) {
-        std::cout << "SUCCESS!";
+    
+    HairPiece convertResult = HairPiece(cl_hp);
+    
+    HairPiece::cleanUpClData(cl_hp);
+    
+    std::cout << "Testing conversion result:" << std::endl;
+    if (hptest.test(&convertResult)) {
+        std::cout << "SUCCESS!" << std::endl << std::endl;
     } else {
-        std::cout << "ERROR!";
+        std::cout << "ERROR!" << std::endl << std::endl;
         return -1;
     }
-
+    
 
 
 

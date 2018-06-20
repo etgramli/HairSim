@@ -81,6 +81,18 @@ public:
         }
     }
 
+    int getNumberOfNodes() const {
+        return nodes.size();
+    }
+    Node* getNode(const int index) const {
+        return nodes[index];
+    }
+    int getNumberOfLinks() const {
+        return links.size();
+    }
+    Link* getLink(const int index) const {
+        return links[index];
+    }
 
     std::vector<float> getCoordinatesForGL();
 
@@ -89,5 +101,6 @@ public:
     static cl_Link getClLinkForLink(Link const * const link, std::map<Node *, int> * const nodeAddressToId);
     static void cleanUpClData(cl_HairPiece hairPiece);
 
+    bool test(HairPiece *other) const;
     bool test(cl_HairPiece hp) const;
 };

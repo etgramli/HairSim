@@ -1,19 +1,25 @@
 #include "BodySolverCPU.h"
-
+#include <iostream>
 
 
 BodySolverCPU::BodySolverCPU()
 {
     Vector *gravity = new Vector(0.0f, 0.000f, -0.0008f);
     this->forces.push_back(gravity);
-    
-    //HairPiece temp;
     /*
-    cl_HairPiece cltemp = hairPiece.getClData();
+    HairPiece temp = HairPiece();
+    
+    cl_HairPiece cltemp = temp.getClData();
     
     hairPiece = HairPiece(cltemp);
     
     HairPiece::cleanUpClData(cltemp);
+
+    if (hairPiece.test(temp)) {
+        std::cout << "SUCCESS!";
+    } else {
+        std::cout << "ERROR!";
+    }
     */
 }
 
