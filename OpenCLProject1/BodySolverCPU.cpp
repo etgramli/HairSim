@@ -6,21 +6,21 @@ BodySolverCPU::BodySolverCPU()
 {
     Vector *gravity = new Vector(0.0f, 0.000f, -0.0008f);
     this->forces.push_back(gravity);
-    /*
+    
     HairPiece temp = HairPiece();
     
     cl_HairPiece cltemp = temp.getClData();
     
-    hairPiece = HairPiece(cltemp);
+    hairPiece = new HairPiece(cltemp);
     
     HairPiece::cleanUpClData(cltemp);
 
-    if (hairPiece.test(temp)) {
+    if (temp.test(hairPiece)) {
         std::cout << "SUCCESS!";
     } else {
         std::cout << "ERROR!";
     }
-    */
+    
 }
 
 BodySolverCPU::BodySolverCPU(std::vector<Vector *> forces) {
@@ -30,9 +30,11 @@ BodySolverCPU::BodySolverCPU(std::vector<Vector *> forces) {
 }
 
 BodySolverCPU::~BodySolverCPU() {
+    delete hairPiece;
     for (Vector *force : forces) {
         delete force;
     }
+    forces.clear();
 }
 
 
@@ -53,7 +55,7 @@ Vector BodySolverCPU::addAllForces() {
 
 void BodySolverCPU::pSolve_Links() {
     // Loop through all links, because all links must have begin and end point
-    for (Link *currentLink : this->hairPiece.getLinks()) {
+    for (Link *currentLink : this->hairPiece->getLinks()) {
         if (currentLink->getBegin() != NULL && currentLink->getEnd() != NULL) {
             Node *a = currentLink->getBegin();
             Node *b = currentLink->getEnd();
@@ -63,7 +65,7 @@ void BodySolverCPU::pSolve_Links() {
 			Vector forcesNodeB = compinedForces * (0.1f * currentLink->getNum());
 
 			// add link force
-			Link *next = hairPiece.getOutgoingLinkFor(currentLink->getEnd());
+			Link *next = hairPiece->getOutgoingLinkFor(currentLink->getEnd());
 			if (next != NULL) {
 				const Vector linkForce = currentLink->getLinkForce(next);
 				next->getEnd()->move(linkForce * -1.0f);

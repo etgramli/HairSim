@@ -5,7 +5,7 @@
 
 class BodySolverCPU {
 
-    HairPiece hairPiece;
+    HairPiece *hairPiece;
     std::vector<Vector *> forces;
 
     float deltaTime = 1;
@@ -23,7 +23,7 @@ public:
     void setDeltaTime(float deltaTime);
 
     HairPiece* getHairPiece() {
-        return &hairPiece;
+        return hairPiece;
     }
 };
 
