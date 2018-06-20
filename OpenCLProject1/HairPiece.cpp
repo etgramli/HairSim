@@ -5,24 +5,27 @@
 HairPiece::HairPiece(size_t dimX, size_t dimY, size_t dimZ)
     : width(dimX), length(dimY), hairlength(dimZ) {
 
+	srand((unsigned)time(NULL));
     for (size_t x = 0; x < dimX; ++x) {
         for (size_t y = 0; y < dimY; ++y) {
-            Node *currentRowStartNode = new Node(x, y, 0.0, true);
+            Node *currentRowStartNode = new Node(x, y, 0.0, 0.0f, true);
             nodes.insert(currentRowStartNode);
 
             Node *previousNode = currentRowStartNode;
             for (size_t z = 1; z < dimZ; ++z) {
+				float r = 0.4f * ((float)rand() / RAND_MAX - 0.5f);
+
 				Node *currentNode;
 				if (z == dimZ - 1) {
-					currentNode = new Node(x + 1, y + 1, z * 1.0f, 1.0f);
+					currentNode = new Node(x, y, z * linkLength, 1.0f + r);
 				} else if (z == 1) {
-					currentNode = new Node(x, y, z * 1.0f, 1.0f, true);
+					currentNode = new Node(x, y, z * linkLength, 1.0f + r, true);
 				}
 				else {
-					currentNode = new Node(x + 1, y + 1, z * 1.0f, 1.0f);
+					currentNode = new Node(x, y, z * linkLength, 1.0f + r);
                 }
                 nodes.insert(currentNode);
-                Link *currentLink = new Link(previousNode, currentNode, dimZ - z);
+                Link *currentLink = new Link(previousNode, currentNode, dimZ - z, linkLength + r);
                 this->links.insert(currentLink);
                 previousNode = currentNode;
             }

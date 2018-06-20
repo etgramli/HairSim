@@ -4,6 +4,7 @@
 #include <map>
 #include "Node.h"
 #include "Link.h"
+#include <time.h>
 
 typedef struct {
     //IDs in the array of the cl_Nodes
@@ -34,6 +35,7 @@ class HairPiece {
     std::unordered_set<Link*> links;
     const size_t width, length;
     const size_t hairlength;
+	const float linkLength = 1.0f;
     unsigned int getHairLength() const;
 
     bool test(cl_HairPiece hp) const;

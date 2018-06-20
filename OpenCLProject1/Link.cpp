@@ -29,9 +29,12 @@ Vector Link::getLinkForce(Link * pre) {
 	
 	Vector a = pre->begin->minus(pre->end);
 	Vector b = end->minus(begin);
+	Vector diff = a + b;
+	float diffLength = diff.length();
+	diff.normalize();
 	float angle = acos((a * b) / (a.length() * b.length())) * 180.0f / PI;
-	if (angle < 160) {
-		force = (a + b) * 0.05f;
+	if (angle < 178) {
+		force = diff * (0.3f * diffLength);
 	}
 
 	return force;

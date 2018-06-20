@@ -8,7 +8,7 @@ class BodySolverCPU {
     HairPiece hairPiece;
     std::vector<Vector *> forces;
 
-    float deltaTime = 1;
+    float deltaTime = 0;
 
     Vector addAllForces();
 

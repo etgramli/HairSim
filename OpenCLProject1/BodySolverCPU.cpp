@@ -43,7 +43,7 @@ void BodySolverCPU::pSolve_Links(const float deltaSeconds) {
             Node *a = currentLink->getBegin();
             Node *b = currentLink->getEnd();
 
-            // Add gravity
+            // add gravity
 			Vector gravitationalAcceleration = Vector(0.0f, 0.0f, -0.00981f);
 			Vector forcesNodeA = gravitationalAcceleration * a->getMass();
 			Vector forcesNodeB = gravitationalAcceleration * b->getMass();
@@ -58,6 +58,12 @@ void BodySolverCPU::pSolve_Links(const float deltaSeconds) {
 			//add spring force
             const Vector springForce = currentLink->getSpringForce(deltaSeconds);
 			forcesNodeB += springForce;
+
+			// add wind
+			deltaTime += deltaSeconds;
+			const Vector windForce = Vector(0.09f, -0.08f, 0.05f) * (sin(deltaTime * 0.02f) + 1.0f);
+			forcesNodeA += windForce;
+			forcesNodeB += windForce;
 
             // Move nodes
 			a->move(forcesNodeA, deltaSeconds);

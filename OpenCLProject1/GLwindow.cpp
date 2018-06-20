@@ -150,6 +150,8 @@ std::vector<GLfloat> generateFloorColorData()
 void initializeOpenGL()
 {
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LINE_SMOOTH);
+	glLineWidth(2.0f);
 
 	glGenVertexArrays(1, &g_vertexArrayId);
 	glBindVertexArray(g_vertexArrayId);
@@ -196,7 +198,7 @@ void drawOpenGL(Window const * const _window, float deltaSeconds)
 
 	//GLfloat const rotationAngle = static_cast< GLfloat >(_lastInterval) / 1000.0f * 20.0f;
 	//Matrix4x4 const rotationMatrix = Matrix4x4::rotate(Vector4(0.0f, 1.0f, 0.0f, 0.0f), DegreeAngle(rotationAngle));
-	Matrix4x4 const scalingMatrix = Matrix4x4::scale(100.0f, 100.0f, 100.0f);
+	Matrix4x4 const scalingMatrix = Matrix4x4::scale(50.0f, 50.0f, 50.0f);
 	Matrix4x4 const modelMatrix = scalingMatrix; // rotationMatrix * 
 
 	Camera const camera = _window->getCamera();
