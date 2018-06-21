@@ -32,28 +32,7 @@ int main() {
     cl_int err = CL_SUCCESS;
 
 
-    // TESTING
-    
-    HairPiece hptest;
-    
-    cl_HairPiece cl_hp = hptest.getClData();
-    
-    HairPiece convertResult = HairPiece(cl_hp);
-    
-    HairPiece::cleanUpClData(cl_hp);
-    
-    std::cout << "Testing conversion result:" << std::endl;
-    if (hptest.test(&convertResult)) {
-        std::cout << "SUCCESS!" << std::endl << std::endl;
-    } else {
-        std::cout << "ERROR!" << std::endl << std::endl;
-        return -1;
-    }
-    
-
-
-
-    HairPiece hp = HairPiece(10,10,100);
+    //HairPiece hp = HairPiece(10,10,100);
 
     // ---- SETUP ----
     cl::Platform plat = getPlatform(CL_DEVICE_TYPE_GPU, 1, prefferedOpenClVendors);

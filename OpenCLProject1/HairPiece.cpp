@@ -41,7 +41,7 @@ HairPiece::HairPiece(cl_HairPiece hairPiece) {
         << width << ", " << length << ", " << hairlength << ")" << std::endl;
 
     std::map<int, Node *> indexToNode;
-    for (int i = 0; i < hairPiece.numNodes; ++i) {
+    for (unsigned int i = 0; i < hairPiece.numNodes; ++i) {
         Node *currentNode = new Node(hairPiece.nodes[i]);
 
         nodes.push_back(currentNode);
@@ -49,7 +49,7 @@ HairPiece::HairPiece(cl_HairPiece hairPiece) {
     }
     std::cout << "Imported " << nodes.size() << " from " << hairPiece.numNodes << " nodes" << std::endl;
 
-    for (int i = 0; i < hairPiece.numLinks; ++i) {
+    for (unsigned int i = 0; i < hairPiece.numLinks; ++i) {
         cl_Link currentClLink = hairPiece.links[i];
         Link *currentLink = new Link(
             indexToNode[currentClLink.beginNodeId],
@@ -151,7 +151,6 @@ cl_HairPiece HairPiece::getClData() const {
     cl_hairPiece.numNodes = cl_hairPiece.sizeX * cl_hairPiece.sizeY * cl_hairPiece.sizeZ;
     cl_hairPiece.nodes = new cl_Node[cl_hairPiece.numNodes];
 
-    // ToDo: Copy Buffers to Device and get Addresses correctly
     std::map<Node *, int> nodeToId; // Map to map node addresses to IDs in the array on device
     unsigned int nodeCounter = -1;
     for (unsigned int i = 0; i < nodes.size(); ++i) {
@@ -159,12 +158,8 @@ cl_HairPiece HairPiece::getClData() const {
         // Copy cl data of node to cl_hairPiece
         cl_hairPiece.nodes[i] = currentNode->getClData();
         
-        //std::cout << "Node1(" << currentNode->getX() << ", " << currentNode->getY()<<", " << currentNode->getZ() << ")" << std::endl;
-        //std::cout << "Node2(" << cl_hairPiece.nodes[i].coordinates.x << ", " << cl_hairPiece.nodes[i].coordinates.y <<", " << cl_hairPiece.nodes[i].coordinates.z << ")" << std::endl;
-
         nodeToId[currentNode] = i; // Add mapping
-        //std::cout << "Node-to-id mapping: (" << currentNode << " -> " << nodeCounter << ")" << std::endl;
-        nodeCounter = i;
+        nodeCounter = i + 1;
     }
     std::cout << "Created " << nodeCounter << " nodes for copying to CL device!" << std::endl;
     std::cout << "Originally " << cl_hairPiece.numNodes << " nodes exist!" << std::endl << std::endl;
@@ -183,7 +178,6 @@ cl_HairPiece HairPiece::getClData() const {
 cl_Link HairPiece::getClLinkForLink(Link const * const link, std::map<Node *, int> * const nodeAddressToId) {
     cl_Link clLink;
     clLink.beginNodeId    = (*nodeAddressToId)[link->getBegin()];
-    //std::cout << "Queried mapping: (" << currentLink->getBegin() << " -> " << nodeToId[currentLink->getBegin()] << ")" << std::endl;
     clLink.endNodeId      = (*nodeAddressToId)[link->getEnd()];
     clLink.length         = link->getLength();
     clLink.springConstant = link->getSpringConstant();
@@ -213,7 +207,7 @@ bool HairPiece::test(HairPiece *other) const {
             << std::endl << std::endl;
         return false;
     }
-    for (int i = 0; i < nodes.size(); ++i) {
+    for (unsigned int i = 0; i < nodes.size(); ++i) {
         Node *myCurrentNode = nodes[i];
         Node *otherCurrentNode = other->getNode(i);
         if (otherCurrentNode->getX() != myCurrentNode->getX() ||
@@ -236,7 +230,7 @@ bool HairPiece::test(HairPiece *other) const {
             << std::endl << std::endl;
         return false;
     }
-    for (int i = 0; i < links.size(); ++i) {
+    for (unsigned int i = 0; i < links.size(); ++i) {
         // Compare
         Link *myLink = links[i];
         Link *clLink = other->getLink(i);
@@ -273,7 +267,7 @@ bool HairPiece::test(cl_HairPiece hp) const {
         return false;
     }
 
-    for (int i = 0; i < nodes.size(); ++i) {
+    for (unsigned int i = 0; i < nodes.size(); ++i) {
         Node *myCurrentNode = nodes[i];
         Node otherCurrentNode = Node(hp.nodes[i]);
         if (otherCurrentNode.getX() != myCurrentNode->getX() ||
@@ -296,8 +290,7 @@ bool HairPiece::test(cl_HairPiece hp) const {
             << std::endl << std::endl;
         return false;
     }
-    for (int i = 0; i < links.size(); ++i) {
-        // Compare
+    for (unsigned int i = 0; i < links.size(); ++i) {
         Link *myLink = links[i];
         cl_Link clLink = hp.links[i];
 

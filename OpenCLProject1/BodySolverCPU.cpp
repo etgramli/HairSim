@@ -18,9 +18,9 @@ BodySolverCPU::BodySolverCPU()
     HairPiece::cleanUpClData(cltemp);
 
     if (temp->test(hairPiece)) {
-        std::cout << "SUCCESS!";
+        std::cout << "SUCCESS!" << std::endl << std::endl;
     } else {
-        std::cout << "ERROR!";
+        std::cout << "ERROR!" << std::endl << std::endl;
     }
     delete temp;
     
