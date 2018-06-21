@@ -92,3 +92,7 @@ void BodySolverCPU::pSolve_Links(const float deltaSeconds) {
         }
     }
 }
+
+HairPiece* BodySolverCPU::getHairPiece() {
+    return hairPiece;
+}

@@ -73,27 +73,12 @@ public:
     Node* getNextNodeFor(Node *node) const;
     std::vector<Link *> getLinks();
 
-    size_t getIndexOfNode(Node *node) const {
-        ptrdiff_t pos = find(nodes.begin(), nodes.end(), node) - nodes.begin();
-        if (pos >= nodes.size()) {
-            return -1;
-        } else {
-            return pos;
-        }
-    }
+    size_t getIndexOfNode(Node *node) const;
 
-    int getNumberOfNodes() const {
-        return nodes.size();
-    }
-    Node* getNode(const int index) const {
-        return nodes[index];
-    }
-    int getNumberOfLinks() const {
-        return links.size();
-    }
-    Link* getLink(const int index) const {
-        return links[index];
-    }
+    int getNumberOfNodes() const;
+    Node* getNode(const int index) const;
+    int getNumberOfLinks() const;
+    Link* getLink(const int index) const;
 
     std::vector<float> getCoordinatesForGL();
 

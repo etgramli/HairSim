@@ -22,8 +22,6 @@ public:
     float getDeltaTime() const;
     void setDeltaTime(float deltaTime);
 
-    HairPiece* getHairPiece() {
-        return hairPiece;
-    }
+    HairPiece* getHairPiece();
 };
 

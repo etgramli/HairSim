@@ -70,8 +70,19 @@ void Vector::add(const Vector vector) {
     this->y += vector.getY();
     this->z += vector.getZ();
 }
+
 void Vector::add(const Vector * const vector) {
     this->add(*vector);
+}
+
+void Vector::add(const float scalar) {
+    x += scalar;
+    y += scalar;
+    z += scalar;
+}
+
+void Vector::subtract(const float scalar) {
+    add(-scalar);
 }
 
 cl_Vector Vector::getClData() {

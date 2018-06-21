@@ -119,6 +119,31 @@ std::vector<Link *> HairPiece::getLinks() {
     return links;
 }
 
+size_t HairPiece::getIndexOfNode(Node *node) const {
+    ptrdiff_t pos = find(nodes.begin(), nodes.end(), node) - nodes.begin();
+    if (pos >= nodes.size()) {
+        return -1;
+    } else {
+        return pos;
+    }
+}
+
+int HairPiece::getNumberOfNodes() const {
+    return nodes.size();
+}
+
+Node* HairPiece::getNode(const int index) const {
+    return nodes[index];
+}
+
+int HairPiece::getNumberOfLinks() const {
+    return links.size();
+}
+
+Link* HairPiece::getLink(const int index) const {
+    return links[index];
+}
+
 // Length in Nodes
 unsigned int HairPiece::getHairLength() const {
     return hairlength;

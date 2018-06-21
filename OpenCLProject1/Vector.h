@@ -11,7 +11,6 @@ private:
 public:
     Vector(float x, float y, float z) : x(x), y(y), z(z) {}
     Vector(): Vector(0.0f, 0.0f, 0.0f) {}
-    ~Vector() {}
 
     Vector& operator+=(const Vector& vector);
     Vector& operator-=(const Vector& vector);
@@ -21,9 +20,7 @@ public:
     bool operator==(const Vector& other);
 
     float getX() const;
-
     float getY() const;
-
     float getZ() const;
 
     cl_float3 get() const;
@@ -35,14 +32,8 @@ public:
 
     void add(const Vector vector);
     void add(const Vector * const vector);
-    void add(const float scalar) {
-        x += scalar;
-        y += scalar;
-        z += scalar;
-    }
-    void subtract(const float scalar) {
-        add(-scalar);
-    }
+    void add(const float scalar);
+    void subtract(const float scalar);
 
     cl_Vector getClData();
 };
