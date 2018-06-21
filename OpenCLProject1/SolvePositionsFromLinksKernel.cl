@@ -41,13 +41,13 @@ __kernel void SolvePositionsFromLinksKernel(__global HairPiece *hairPiece,
 
     // add gravity
     float3 gravitationalAcceleration = float3(0.0f, 0.0f, -0.00981f);
-    float3 forcesNodeA = gravitationalAcceleration * a->getMass();
-    float3 forcesNodeB = gravitationalAcceleration * b->getMass();
+    float3 forcesNodeA = gravitationalAcceleration * a->mass;
+    float3 forcesNodeB = gravitationalAcceleration * b->mass;
 
     // add link force
     Link *pre = hairPiece->getIngoingLinkFor(currentLink->getBegin());
     if (pre != NULL) {
-        const Vector linkForce = currentLink->getLinkForce(pre);
+        float3 linkForce = currentLink->getLinkForce(pre);
         forcesNodeB -= linkForce;
     }
 
@@ -58,12 +58,27 @@ __kernel void SolvePositionsFromLinksKernel(__global HairPiece *hairPiece,
     // add wind
     deltaTime += deltaSeconds;
 
-    const Vector windForce = Vector(0.09f, -0.08f, 0.05f) * (sin(deltaTime * 0.02f) + 1.0f);
+    float3 windForce = float3(0.09f, -0.08f, 0.05f) * (sin(deltaTime * 0.02f) + 1.0f);
 
     forcesNodeA += windForce;
     forcesNodeB += windForce;
 
     // Move nodes
-    a->move(forcesNodeA, deltaSeconds);
-    b->move(forcesNodeB, deltaSeconds);
+    if (!a->isConst) {
+        a->move(forcesNodeA, deltaSeconds);
+    }
+    if (!b->isConst) {
+        b->move(forcesNodeB, deltaSeconds);
+    }
+}
+
+__kernel uint getIngoingLinkIndexFor(HairPiece *hp, uint nodeId) {
+    uint index = 0;
+    for (uint i = 0; i < hp->numLinks; ++i) {
+        Link *link = &hp->links[i];
+        if (link->endNodeId == nodeId) {
+            return i;
+        }
+    }
+    return -1;
 }

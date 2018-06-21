@@ -16,6 +16,13 @@ public:
     Vector& operator+=(const Vector& vector);
     Vector& operator-=(const Vector& vector);
     Vector& operator*=(const float scalar);
+    bool operator!=(const Vector& other) {
+        const bool equality =
+            x == other.getX() &&
+            y == other.getY() &&
+            z == other.getZ();
+        return !equality;
+    }
 	float operator*(const Vector &vector);
 
     float getX() const;

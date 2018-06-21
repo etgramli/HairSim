@@ -44,9 +44,6 @@ HairPiece::HairPiece(cl_HairPiece hairPiece) {
     for (int i = 0; i < hairPiece.numNodes; ++i) {
         Node *currentNode = new Node(hairPiece.nodes[i]);
 
-        //std::cout << "Created Node(" << currentNode->getX() << ", " << currentNode->getY()<<", " << currentNode->getZ() << ")" << std::endl;
-
-
         nodes.push_back(currentNode);
         indexToNode[i] = currentNode;
     }
@@ -281,7 +278,9 @@ bool HairPiece::test(cl_HairPiece hp) const {
         Node otherCurrentNode = Node(hp.nodes[i]);
         if (otherCurrentNode.getX() != myCurrentNode->getX() ||
             otherCurrentNode.getY() != myCurrentNode->getY() ||
-            otherCurrentNode.getZ() != myCurrentNode->getZ()) {
+            otherCurrentNode.getZ() != myCurrentNode->getZ() ||
+            otherCurrentNode.getMass() != myCurrentNode->getMass() ||
+            otherCurrentNode.getVelocity() != myCurrentNode->getVelocity()) {
             std::cout << "Nodes are DIFFERENT at index: " << i << std::endl;
             std::cout << "Node1(" << myCurrentNode->getX() << ", " << myCurrentNode->getY()<<", " << myCurrentNode->getZ() << ")" << std::endl;
             std::cout << "Node2(" << otherCurrentNode.getX() << ", " << otherCurrentNode.getY()<<", " << otherCurrentNode.getZ() << ")" << std::endl;
