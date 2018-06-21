@@ -7,6 +7,11 @@ cl_Node Node::getClData() {
     node.coordinates.y = y;
     node.coordinates.z = z;
     node.isConst = isConstant ? CL_TRUE : CL_FALSE;
+	node.mass = mass;
+	node.velocity = cl_float3();
+	node.velocity.x = velocity.getX();
+	node.velocity.y = velocity.getY();
+	node.velocity.z = velocity.getZ();
 
     return node;
 }
@@ -55,10 +60,6 @@ void Node::move(Vector force, float deltaSeconds) {
 	x += v.getX();
 	y += v.getY();
 	z += v.getZ();
-	if (v.getZ() != 0) {
-		//printf("%f %f %f\n", v.getX(), v.getY(), v.getZ());
-		//printf("%f\n", deltaSeconds);
-	}
 	velocity = v;
 
 	if (z <= 0) {
@@ -67,7 +68,4 @@ void Node::move(Vector force, float deltaSeconds) {
 			velocity = Vector(velocity.getX(), velocity.getY(), 0);
 		}
 	}
-	/*x += force.getX();
-    y += force.getY();
-    z += force.getZ();*/
 }
