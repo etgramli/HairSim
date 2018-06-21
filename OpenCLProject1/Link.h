@@ -6,6 +6,7 @@
 #define PI 3.14159265f
 
 class Link {
+private:
 	float springConstant;
     const float length;
     Node *begin, *end;
@@ -14,8 +15,7 @@ public:
     Link(Node *begin, Node *end, float length = 1.0f, float springConstant = 0.8f)
         : begin(begin), end(end), length(length), springConstant(springConstant) {}
     Link(const Link &link2)
-        : begin(link2.getBegin()), end(link2.getEnd()), springConstant(link2.getSpringConstant()),
-        length(link2.getLength()) {}
+        : begin(link2.getBegin()), end(link2.getEnd()), springConstant(link2.getSpringConstant()), length(link2.getLength()) {}
     ~Link() {}
     
     // Getter

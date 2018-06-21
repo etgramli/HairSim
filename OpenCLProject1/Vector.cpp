@@ -25,6 +25,14 @@ float Vector::operator*(const Vector& vector) {
 	return this->x * vector.getX() + this->y * vector.getY() + this->z * vector.getZ();
 }
 
+bool Vector::operator!=(const Vector &other) {
+    return !(*this == other);
+}
+
+bool Vector::operator==(const Vector& other) {
+    return x == other.getX() && y == other.getY() && z == other.getZ();
+}
+
 
 float Vector::getX() const {
     return x;

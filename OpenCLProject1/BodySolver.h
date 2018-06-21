@@ -4,8 +4,8 @@
 #include "HairPiece.h"
 
 
-class BodySolver
-{
+class BodySolver {
+private:
     std::string kernelFileName = "SolvePositionsFromKernel.cl";
     std::string kernelName = "SolvePositionsFromLinksKernel";
 

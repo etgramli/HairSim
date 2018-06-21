@@ -28,7 +28,7 @@ typedef struct {
 
 // Container class for multiple hair strings.
 class HairPiece {
-
+private:
     std::vector<Node *> nodes;
     std::vector<Link*> links;
     size_t width, length;

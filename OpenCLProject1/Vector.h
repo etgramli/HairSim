@@ -4,8 +4,8 @@
 
 typedef cl_float3 cl_Vector;
 
-class Vector
-{
+class Vector {
+private:
     float x, y, z;
 
 public:
@@ -16,14 +16,9 @@ public:
     Vector& operator+=(const Vector& vector);
     Vector& operator-=(const Vector& vector);
     Vector& operator*=(const float scalar);
-    bool operator!=(const Vector& other) {
-        const bool equality =
-            x == other.getX() &&
-            y == other.getY() &&
-            z == other.getZ();
-        return !equality;
-    }
 	float operator*(const Vector &vector);
+    bool operator!=(const Vector& other);
+    bool operator==(const Vector& other);
 
     float getX() const;
 

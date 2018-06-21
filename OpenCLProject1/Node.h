@@ -14,7 +14,7 @@ typedef struct {
 
 
 class Node {
-
+private:
     float x, y, z, mass;
     const bool isConstant;
 	Vector velocity;

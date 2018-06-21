@@ -4,7 +4,7 @@
 #include "Link.h"
 
 class BodySolverCPU {
-
+private:
     HairPiece *hairPiece;
     std::vector<Vector *> forces;
 

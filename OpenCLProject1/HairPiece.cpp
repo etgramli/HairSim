@@ -47,16 +47,21 @@ HairPiece::HairPiece(cl_HairPiece hairPiece) {
         nodes.push_back(currentNode);
         indexToNode[i] = currentNode;
     }
-    std::cout << "Imported " << nodes.size() << " from " << hairPiece.numNodes << " nodes" << std::endl;
+    if (nodes.size() != hairPiece.numNodes) {
+        std::cout << "Importing failed: " << nodes.size() << " from " << hairPiece.numNodes << " nodes imported!" << std::endl;
+    }
+    
 
     for (unsigned int i = 0; i < hairPiece.numLinks; ++i) {
         cl_Link currentClLink = hairPiece.links[i];
-        Link *currentLink = new Link(
+        links.push_back(new Link(
             indexToNode[currentClLink.beginNodeId],
             indexToNode[currentClLink.endNodeId],
             currentClLink.length,
-            currentClLink.springConstant);
-        links.push_back(currentLink);
+            currentClLink.springConstant));
+    }
+    if(links.size() != hairPiece.numLinks) {
+        std::cout << "Imported failed: " << links.size() << " from " << hairPiece.numLinks << " links!" << std::endl << std::endl;
     }
 }
 
@@ -191,14 +196,6 @@ void HairPiece::cleanUpClData(cl_HairPiece hairPiece) {
 
 
 
-
-
-
-
-
-
-
-
 bool HairPiece::test(HairPiece *other) const {
     if (other->getNumberOfNodes() != this->getNumberOfNodes()) {
         std::cout << std::endl
@@ -231,7 +228,6 @@ bool HairPiece::test(HairPiece *other) const {
         return false;
     }
     for (unsigned int i = 0; i < links.size(); ++i) {
-        // Compare
         Link *myLink = links[i];
         Link *clLink = other->getLink(i);
 
@@ -253,62 +249,6 @@ bool HairPiece::test(HairPiece *other) const {
 }
 
 
-
-
-
-
-
 bool HairPiece::test(cl_HairPiece hp) const {
-    if (hp.numNodes != this->nodes.size()) {
-        std::cout << std::endl
-            << "Number of nodes are not Equal! (" << nodes.size()
-            << " v s" << hp.numNodes
-            << std::endl << std::endl;
-        return false;
-    }
-
-    for (unsigned int i = 0; i < nodes.size(); ++i) {
-        Node *myCurrentNode = nodes[i];
-        Node otherCurrentNode = Node(hp.nodes[i]);
-        if (otherCurrentNode.getX() != myCurrentNode->getX() ||
-            otherCurrentNode.getY() != myCurrentNode->getY() ||
-            otherCurrentNode.getZ() != myCurrentNode->getZ() ||
-            otherCurrentNode.getMass() != myCurrentNode->getMass() ||
-            otherCurrentNode.getVelocity() != myCurrentNode->getVelocity()) {
-            std::cout << "Nodes are DIFFERENT at index: " << i << std::endl;
-            std::cout << "Node1(" << myCurrentNode->getX() << ", " << myCurrentNode->getY()<<", " << myCurrentNode->getZ() << ")" << std::endl;
-            std::cout << "Node2(" << otherCurrentNode.getX() << ", " << otherCurrentNode.getY()<<", " << otherCurrentNode.getZ() << ")" << std::endl;
-            return false;
-        }
-    }
-    std::cout << "All Nodes are EQUAL!" << std::endl;
-
-    if (hp.numLinks != links.size()) {
-        std::cout << std::endl
-            << "Number of links are not Equal! (" << links.size()
-            << " v s" << hp.numLinks
-            << std::endl << std::endl;
-        return false;
-    }
-    for (unsigned int i = 0; i < links.size(); ++i) {
-        Link *myLink = links[i];
-        cl_Link clLink = hp.links[i];
-
-        size_t beginNodeIdx = getIndexOfNode(myLink->getBegin());
-        size_t endNodeIdx = getIndexOfNode(myLink->getEnd());
-        size_t beginClNodeIdx = clLink.beginNodeId;
-        size_t endClNodeIdx = clLink.endNodeId;
-
-        Link clLinkConverted = Link(
-            NULL, NULL, clLink.length, clLink.springConstant);
-        if (myLink->getLength() != clLinkConverted.getLength() ||
-            myLink->getSpringConstant() != clLinkConverted.getSpringConstant() ||
-            beginNodeIdx != beginClNodeIdx ||
-            endNodeIdx != endClNodeIdx) {
-            std::cout << "Links are DIFFERENT at index: " << i << std::endl;
-            return false;
-        }
-    }
-
-    return true;
+    return test(&HairPiece(hp));
 }
