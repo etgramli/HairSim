@@ -118,12 +118,16 @@ float3 getSpringForce(__global HairPiece *hp, Link *link) {
 };
 
 float3 getLinkForce(__global HairPiece *hp, Link *thisLink, Link *preLink) {
-    float3 a = pre->begin->minus(pre->end);
-    float3 b = end->minus(begin);
+    float3 a = 
+        hp->nodes[preLink->beginNodeId].coordinates
+        - hp->nodes[preLink->endNodeId].coordinates;
+    float3 b = 
+        hp->nodes[thisLink->endNodeId].coordinates
+        - hp->nodes[thisLink->beginNodeId].coordinates;
     float3 diff = a + b;
     float diffLength = length(diff);
     normalize(diff);
-    float angle = acos((a * b) / (length(a) * length(b))) * 180.0f / (float)M_PI;
+    float angle = acos(dot(a, b) / (length(a) * length(b))) * 180.0f / M_PI;
     if (angle < 178) {
         return diff * (0.3f * diffLength);
     } else {
