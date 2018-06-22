@@ -65,15 +65,8 @@ int main() {
         cl::CommandQueue queueKernel(context, devices[0], 0, &err);
         printStatus("Create kernel queue:", err);
 
-
-
         BodySolver bs = BodySolver(&context, &queueKernel);
-
-
-        clVectorAdd *vAdd = new clVectorAdd(&context, &queueKernel);
-        vAdd->enqueue();
-
-        std::cout << "Is result correct: " << (vAdd->validate() ? "yes" : "false") << std::endl << std::endl;
+        bs.solveLinksForPosition(1);
 
 		openGLWindow();
     } catch (std::exception& e) {

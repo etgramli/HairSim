@@ -61,7 +61,7 @@ BodySolver::~BodySolver() {
     delete hp;
 }
 
-void BodySolver::solveLinksForPosition(const float deltaSeconds) {
+void BodySolver::solveLinksForPosition(float deltaSeconds) {
     cl_HairPiece clHairPiece = hp->getClData();
 
     cl_int err = CL_SUCCESS;
@@ -77,7 +77,7 @@ void BodySolver::solveLinksForPosition(const float deltaSeconds) {
 
     // Copy HairPiece
     cl::Event copyHairPieceEvent;
-    err = queue->enqueueWriteBuffer(bufferHairPiece, CL_TRUE, 0, sizeof(cl_Link) * clHairPiece.numLinks, (void *) &clHairPiece, NULL, &copyHairPieceEvent);
+    err = queue->enqueueWriteBuffer(bufferHairPiece, CL_TRUE, 0, sizeof(clHairPiece), (void *) &clHairPiece, NULL, &copyHairPieceEvent);
     printStatus("Enqueue copying HairPiece:", err);
 
     // Copy deltaTime
@@ -108,7 +108,7 @@ void BodySolver::solveLinksForPosition(const float deltaSeconds) {
     printStatus("Set kernel arg 3: ", err);
     err = kernel.setArg(4, bufferDeltaSeconds);
     printStatus("Set kernel arg 4: ", err);
-
+    
     // Launch kernel
     cl::Event kernelEvent;
     err = queue->enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(clHairPiece.numLinks), cl::NullRange, &copiedData, &kernelEvent);
