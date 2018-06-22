@@ -24,6 +24,6 @@ public:
     Node* getBegin() const;
     Node* getEnd() const;
 
-    Vector getSpringForce(float t);
-	Vector getLinkForce(Link * next);
+    Vector getSpringForce();
+	Vector getLinkForce(Link *next);
 };
