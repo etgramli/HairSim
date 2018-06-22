@@ -27,9 +27,16 @@ typedef struct {
     Node *nodes;     // Array of nodes to be copied directly to the device
 } HairPiece;
 
+
+// ToDo: add functions: getLinkForce(), getSpringForce()
+
+uint getIngoingLinkIndexFor(__global HairPiece *hp, uint nodeId);
+void move(Node *node, float3 force, float deltaSeconds);
+
 // Each launched kernel handles one link and therefore two nodes
-__kernel void SolvePositionsFromLinksKernel(__global HairPiece *hairPiece,
+__kernel void solvePositionsFromLinksKernel(__global HairPiece *hairPiece,
                                             __global float3 *forces,
+                                            __global float *deltaTime,
                                             float deltaSeconds) {
     unsigned int i = get_global_id(0);
     Link *currentLink = &hairPiece->links[i];
@@ -40,39 +47,36 @@ __kernel void SolvePositionsFromLinksKernel(__global HairPiece *hairPiece,
     Node *b = &hairPiece->nodes[b_id];
 
     // add gravity
-    float3 gravitationalAcceleration = float3(0.0f, 0.0f, -0.00981f);
+    float3 gravitationalAcceleration = (float3)(0.0f, 0.0f, -0.00981f);
     float3 forcesNodeA = gravitationalAcceleration * a->mass;
     float3 forcesNodeB = gravitationalAcceleration * b->mass;
 
     // add link force
-    Link *pre = hairPiece->getIngoingLinkFor(currentLink->getBegin());
-    if (pre != NULL) {
+    uint linkIdx = getIngoingLinkIndexFor(hairPiece, currentLink->beginNodeId);
+    if (linkIdx > -1) {
+        Link *pre = &hairPiece->links[linkIdx];
         float3 linkForce = currentLink->getLinkForce(pre);
         forcesNodeB -= linkForce;
     }
 
     //add spring force
-    const Vector springForce = currentLink->getSpringForce(deltaSeconds);
+    const float3 springForce = currentLink->getSpringForce(deltaSeconds);
     forcesNodeB += springForce;
 
     // add wind
-    deltaTime += deltaSeconds;
+    (*deltaTime) += deltaSeconds;
 
-    float3 windForce = float3(0.09f, -0.08f, 0.05f) * (sin(deltaTime * 0.02f) + 1.0f);
+    float3 windForce = (float3)(0.09f, -0.08f, 0.05f) * (sin(*deltaTime * 0.02f) + 1.0f);
 
     forcesNodeA += windForce;
     forcesNodeB += windForce;
 
     // Move nodes
-    if (!a->isConst) {
-        a->move(forcesNodeA, deltaSeconds);
-    }
-    if (!b->isConst) {
-        b->move(forcesNodeB, deltaSeconds);
-    }
+    move(a, forcesNodeA, deltaSeconds);
+    move(b, forcesNodeB, deltaSeconds);
 }
 
-__kernel uint getIngoingLinkIndexFor(HairPiece *hp, uint nodeId) {
+uint getIngoingLinkIndexFor(__global HairPiece *hp, uint nodeId) {
     uint index = 0;
     for (uint i = 0; i < hp->numLinks; ++i) {
         Link *link = &hp->links[i];
@@ -81,4 +85,21 @@ __kernel uint getIngoingLinkIndexFor(HairPiece *hp, uint nodeId) {
         }
     }
     return -1;
+}
+
+
+void move(Node *node, float3 force, float deltaSeconds) {
+    if (node->isConst) {
+        return;
+    }
+    float3 v = force * (deltaSeconds / node->mass) + (node->velocity * 0.9f);// damping factor
+    node->coordinates += v;
+    node->velocity = v;
+
+    if (node->coordinates.z <= 0) {
+        node->coordinates.z = 0;
+        if (node->velocity.z <= 0) {
+            node->velocity.z = 0;
+        }
+    }
 }

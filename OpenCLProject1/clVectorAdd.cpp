@@ -4,9 +4,7 @@
 #include <fstream>
 
 
-clVectorAdd::clVectorAdd(cl::Context *context, cl::CommandQueue *queue)
-{
-    cl_int err;
+clVectorAdd::clVectorAdd(cl::Context *context, cl::CommandQueue *queue) {
     for (int i = 0; i < ARRAYSIZE; ++i) {
         A[i] = B[i] = i;
     }
@@ -14,6 +12,7 @@ clVectorAdd::clVectorAdd(cl::Context *context, cl::CommandQueue *queue)
     this->context = context;
     this->queue = queue;
 
+    cl_int err;
     // ERROR CHECKING IN WHOLE FOLLOOWING BLOCK
     this->bufA = cl::Buffer(*context, CL_MEM_READ_ONLY, sizeof(int) * ARRAYSIZE, NULL, &err);
     printStatus("Create buffer A:", err);
@@ -42,10 +41,6 @@ clVectorAdd::clVectorAdd(cl::Context *context, cl::CommandQueue *queue)
     printStatus("Create kernel:", err);
 }
 
-
-clVectorAdd::~clVectorAdd()
-{
-}
 
 cl_int clVectorAdd::enqueue() {
     cl_int err = CL_SUCCESS;

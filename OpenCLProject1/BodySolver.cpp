@@ -2,92 +2,70 @@
 
 #include "clHelper.h"
 #include <fstream>
+#include <iostream>
 
-BodySolver::BodySolver(cl::CommandQueue *queue)
-{
+BodySolver::BodySolver(cl::Context *context, cl::CommandQueue *queue) {
+    this->context = context;
     this->queue = queue;
 
-    cl_int err;
+    hp = new HairPiece();
+
+
     // ToDo: Buffers
+    // Nodes
+    // Links
+    // HairPiece
+    // float deltaTime = 0.0f
+
+
+    std::cout << std::endl <<  "--- cl Kernel BodySolver setup ---" << std::endl;
 
     // Read kernel file to char array
     std::ifstream in(kernelFileName);
     std::string source((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
-    // Create cl::Program::Sources
+
     cl::Program::Sources src(1, std::make_pair(source.c_str(), strlen(source.c_str())));
-    // Create cl::Program
     program = cl::Program(*context, src);
+
     // Build program
+    cl_int err = CL_SUCCESS;
     std::vector<cl::Device> devices = (*context).getInfo<CL_CONTEXT_DEVICES>(&err);
     printStatus("Context.getInfo<CL_CONTEXT_DEVICES>:", err);
-
+    
     err = CL_SUCCESS;
     err = program.build(devices);
     printStatus("Build program:", err);
+    if (err != CL_SUCCESS) {
+        char log[65536];
+        err = program.getBuildInfo(devices[0], CL_PROGRAM_BUILD_LOG, &log);
+        std::cout << log << std::endl << std::endl;
+    }
 
     // Create cl::Kernel
     this->kernel = cl::Kernel(program, this->kernelName.c_str(), &err);
     printStatus("Create kernel:", err);
+
+    std::cout << "--- BodySolver for OpenCL created! --- " << std::endl << std::endl;
 }
 
 
-BodySolver::~BodySolver()
-{
+BodySolver::~BodySolver() {
+    delete hp;
 }
 
-void BodySolver::solveLinksForPosition(int startLink,
-                                       int numLinks,
-                                       float kst,
-                                       float ti) {
-    cl_int ciErrNum = CL_SUCCESS, err = CL_SUCCESS;
+void BodySolver::solveLinksForPosition() {
+    cl_int err = CL_SUCCESS;
+
+    // Copy Array of Nodes
+    // Copy Array of Links
+    // Copy HairPiece
+    // - Set Pointer in HairPiece to Array of Nodes
+    // - Set Pointer in HairPiece to Array of Links
+
+    /*
     err = kernel.setArg(0, startLink);
     err |= kernel.setArg(1, numLinks);
     err |= kernel.setArg(2, kst);
     err |= kernel.setArg(3, ti);
-
-    // Create Buffers
-    // Copy Buffers
-    // Set Kernel Args
-    /*
-    ciErrNum = clSetKernelArg(
-        solvePositionsFromLinksKernel,
-        4, 
-        sizeof(cl_mem), 
-        &m_linkData.m_clLinks.m_buffer);
-    ciErrNum = clSetKernelArg(
-        solvePositionsFromLinksKernel,
-        5,
-        sizeof(cl_mem),
-        &m_linkData.m_clLinksMassLSC.m_buffer);
-    ciErrNum = clSetKernelArg(
-        solvePositionsFromLinksKernel,
-        6, 
-        sizeof(cl_mem),
-        &m_linkData.m_clLinksRestLengthSquared.m_buffer);
-    ciErrNum = clSetKernelArg(
-        solvePositionsFromLinksKernel,
-        7, 
-        sizeof(cl_mem), 
-        &m_vertexData.m_clVertexInverseMass.m_buffer);
-    ciErrNum = clSetKernelArg(
-        solvePositionsFromLinksKernel,
-        8, 
-        sizeof(cl_mem), 
-        &m_vertexData.m_clVertexPosition.m_buffer);
-
-    printStatus("Setting arguments for BodySolver kernel: ", err);
-
-    size_t  numWorkItems = workGroupSize*
-        ((numLinks + (workGroupSize-1)) / workGroupSize);
-    ciErrNum = clEnqueueNDRangeKernel(
-        m_cqCommandQue,
-        solvePositionsFromLinksKernel,
-        1,
-        NULL, 
-        &numWorkItems,
-        &workGroupSize,0,0,0);
-    if( ciErrNum!= CL_SUCCESS) {
-        btAssert( 0 &&
-            "enqueueNDRangeKernel(solvePositionsFromLinksKernel)");
-    }*/
-} // solveLinksForPosition
+    */
+}

@@ -8,6 +8,8 @@
 
 #include "GLwindow.h"
 
+#include "BodySolver.h"
+
 #include "HairPiece.h"
 
 // Must be in opposite order (here AMD would be selected first, then Nvidia, at last Intel)
@@ -30,9 +32,6 @@ void openGLWindow();
 
 int main() {
     cl_int err = CL_SUCCESS;
-
-
-    //HairPiece hp = HairPiece(10,10,100);
 
     // ---- SETUP ----
     cl::Platform plat = getPlatform(CL_DEVICE_TYPE_GPU, 1, prefferedOpenClVendors);
@@ -65,6 +64,11 @@ int main() {
         // Create cl::ConandQueue
         cl::CommandQueue queueKernel(context, devices[0], 0, &err);
         printStatus("Create kernel queue:", err);
+
+
+
+        BodySolver bs = BodySolver(&context, &queueKernel);
+
 
         clVectorAdd *vAdd = new clVectorAdd(&context, &queueKernel);
         vAdd->enqueue();
