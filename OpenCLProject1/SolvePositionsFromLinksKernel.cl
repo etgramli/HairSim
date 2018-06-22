@@ -28,10 +28,11 @@ typedef struct {
 } HairPiece;
 
 
-// ToDo: add functions: getLinkForce(), getSpringForce()
-
 uint getIngoingLinkIndexFor(__global HairPiece *hp, uint nodeId);
 void move(Node *node, float3 force, float deltaSeconds);
+
+float3 getSpringForce(__global HairPiece *hp, Link *link);
+float3 getLinkForce(__global HairPiece *hp, Link *thisLink, Link *preLink);
 
 // Each launched kernel handles one link and therefore two nodes
 __kernel void solvePositionsFromLinksKernel(__global HairPiece *hairPiece,
@@ -55,12 +56,12 @@ __kernel void solvePositionsFromLinksKernel(__global HairPiece *hairPiece,
     uint linkIdx = getIngoingLinkIndexFor(hairPiece, currentLink->beginNodeId);
     if (linkIdx > -1) {
         Link *pre = &hairPiece->links[linkIdx];
-        float3 linkForce = currentLink->getLinkForce(pre);
+        float3 linkForce = getLinkForce(hairPiece, currentLink, pre);
         forcesNodeB -= linkForce;
     }
 
     //add spring force
-    const float3 springForce = currentLink->getSpringForce(deltaSeconds);
+    const float3 springForce = getSpringForce(hairPiece, currentLink);
     forcesNodeB += springForce;
 
     // add wind
@@ -103,3 +104,29 @@ void move(Node *node, float3 force, float deltaSeconds) {
         }
     }
 }
+
+
+float3 getSpringForce(__global HairPiece *hp, Link *link) {
+    float3 diff =
+        hp->nodes[link->endNodeId].coordinates
+        - hp->nodes[link->beginNodeId].coordinates;
+    float diffLength = length(diff);
+    normalize(diff);
+    float s = link->length - diffLength;
+
+    return diff * (link->springConstant * s);
+};
+
+float3 getLinkForce(__global HairPiece *hp, Link *thisLink, Link *preLink) {
+    float3 a = pre->begin->minus(pre->end);
+    float3 b = end->minus(begin);
+    float3 diff = a + b;
+    float diffLength = length(diff);
+    normalize(diff);
+    float angle = acos((a * b) / (length(a) * length(b))) * 180.0f / (float)M_PI;
+    if (angle < 178) {
+        return diff * (0.3f * diffLength);
+    } else {
+        return (float3)(0.0f, 0.0f, 0.0f);
+    }
+};

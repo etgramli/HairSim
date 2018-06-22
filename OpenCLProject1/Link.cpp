@@ -23,7 +23,7 @@ Vector Link::getSpringForce() {
 	diff.normalize();
 	float s = length - diffLength;
 
-    return diff * (springConstant * s);;
+    return diff * (springConstant * s);
 };
 
 Vector Link::getLinkForce(Link *pre) {
