@@ -16,7 +16,6 @@ public:
         : begin(begin), end(end), length(length), springConstant(springConstant) {}
     Link(const Link &link2)
         : begin(link2.getBegin()), end(link2.getEnd()), springConstant(link2.getSpringConstant()), length(link2.getLength()) {}
-    ~Link() {}
     
     // Getter
     float getSpringConstant() const;
@@ -24,6 +23,6 @@ public:
     Node* getBegin() const;
     Node* getEnd() const;
 
-    Vector getSpringForce();
-	Vector getLinkForce(Link *next);
+    Vector getSpringForce() const;
+	Vector getLinkForce(Link const * const next) const;
 };

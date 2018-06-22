@@ -85,7 +85,7 @@ void Vector::subtract(const float scalar) {
     add(-scalar);
 }
 
-cl_Vector Vector::getClData() {
+cl_Vector Vector::getClData() const {
     cl_float3 vec;
     vec.x = x;
     vec.y = y;

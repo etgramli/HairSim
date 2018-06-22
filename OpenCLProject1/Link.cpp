@@ -17,7 +17,7 @@ Node* Link::getEnd() const {
     return end;
 }
 
-Vector Link::getSpringForce() {
+Vector Link::getSpringForce() const {
     Vector diff = end->minus(begin);    // Difference from Node positions
 	float diffLength = diff.length();
 	diff.normalize();
@@ -26,7 +26,7 @@ Vector Link::getSpringForce() {
     return diff * (springConstant * s);
 };
 
-Vector Link::getLinkForce(Link *pre) {
+Vector Link::getLinkForce(Link const * const pre) const {
 	Vector a = pre->begin->minus(pre->end);
 	Vector b = end->minus(begin);
 	Vector diff = a + b;

@@ -17,32 +17,32 @@ cl_Node Node::getClData() {
 }
 
 
-float Node::getX() {
+float Node::getX() const {
     return x;
 }
-float Node::getY() {
+float Node::getY() const {
     return y;
 }
-float Node::getZ() {
+float Node::getZ() const {
     return z;
 }
-float Node::getMass() {
+float Node::getMass() const {
 	return mass;
 }
-bool Node::isConst() {
+bool Node::isConst() const {
     return isConstant;
 }
-Vector Node::getVelocity() {
+Vector Node::getVelocity() const {
 	return velocity;
 }
 
-void Node::setPosition(float x, float y, float z) {
+void Node::setPosition(const float x, const float y, const float z) {
     this->x = x;
     this->y = y;
     this->z = z;
 }
 
-Vector Node::minus(Node *b) {
+Vector Node::minus(Node const * const b) {
     if (b == NULL) {
         return Vector(x,y,z);
     } else {
@@ -52,7 +52,7 @@ Vector Node::minus(Node *b) {
     }
 }
 
-void Node::move(Vector force, float deltaSeconds) {
+void Node::move(const Vector force, const float deltaSeconds) {
     if (isConstant) {
         return;
     }

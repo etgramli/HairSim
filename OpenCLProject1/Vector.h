@@ -35,7 +35,7 @@ public:
     void add(const float scalar);
     void subtract(const float scalar);
 
-    cl_Vector getClData();
+    cl_Vector getClData() const;
 };
 
 inline Vector operator+(Vector lhs, const Vector &rhs) {

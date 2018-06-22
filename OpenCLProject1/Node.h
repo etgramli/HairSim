@@ -20,24 +20,29 @@ private:
 	Vector velocity;
 
 public:
-    Node(float x, float y, float z, float mass = 1.0f, bool isConst = false, Vector velocity = Vector(0,0,0)): x(x), y(y), z(z), mass(mass), isConstant(isConst), velocity(velocity) {}
-    Node(cl_Node node): x(node.coordinates.x), y(node.coordinates.y), z(node.coordinates.z), isConstant(node.isConst), mass(node.mass) {
+    Node(const float x,
+         const float y,
+         const float z,
+         const float mass = 1.0f,
+         const bool isConst = false,
+         const Vector velocity = Vector(0,0,0))
+        : x(x), y(y), z(z), mass(mass), isConstant(isConst), velocity(velocity) {}
+    Node(const cl_Node node) : x(node.coordinates.x), y(node.coordinates.y), z(node.coordinates.z), isConstant(node.isConst), mass(node.mass) {
         velocity = Vector(node.velocity.x, node.velocity.y, node.velocity.z);
     }
-    ~Node() {}
 
-    float getX();
-    float getY();
-    float getZ();
-	float getMass();
-    bool isConst();
-	Vector getVelocity();
+    float getX() const;
+    float getY() const;
+    float getZ() const;
+	float getMass() const;
+    bool isConst() const;
+	Vector getVelocity() const;
 
-    void setPosition(float x, float y, float z);
+    void setPosition(const float x, const float y, const float z);
 
-    Vector minus(Node *b);
+    Vector minus(Node const * const b);
 
-    void move(Vector force, float deltaSeconds);
+    void move(const Vector force, const float deltaSeconds);
 
     cl_Node getClData();
 };
