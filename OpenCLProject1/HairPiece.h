@@ -28,7 +28,6 @@ typedef struct {
 
 // Container class for multiple hair strings.
 class HairPiece {
-private:
     std::vector<Node *> nodes;
     std::vector<Link*> links;
     size_t width, length;
@@ -39,34 +38,10 @@ private:
 
 public:
     HairPiece(size_t dimX = 5, size_t dimY = 5, size_t dimZ = 10);
-    HairPiece(cl_HairPiece hairPiece);
+    HairPiece(const cl_HairPiece hairPiece);
     ~HairPiece();
 
-    HairPiece& operator=(const HairPiece& hairPiece2) {
-        if (this == &hairPiece2) {
-            return *this;
-        }
-        if (links.size() > 0) {
-            for (Link *current : links) {
-                delete current;
-            }
-            links.clear();
-        }
-        if (nodes.size() > 0) {
-            for (Node *current : nodes) {
-                delete current;
-            }
-            nodes.clear();
-        }
-
-        for (Node *node : hairPiece2.nodes) {
-            nodes.push_back(new Node(*node));
-        }
-        for (Link *link : hairPiece2.links) {
-            links.push_back(new Link(*link));
-        }
-        return *this;
-    }
+    HairPiece& operator=(const HairPiece& hairPiece2);
 
     Link* getOutgoingLinkFor(Node *node) const;
 	Link* getIngoingLinkFor(Node *node) const;
@@ -80,8 +55,7 @@ public:
     int getNumberOfLinks() const;
     Link* getLink(const int index) const;
 
-    std::vector<float> getCoordinatesForGL();
-
+    std::vector<float> getCoordinatesForGL() const;
 
     cl_HairPiece getClData() const;
     static cl_Link getClLinkForLink(Link const * const link, std::map<Node *, int> * const nodeAddressToId);

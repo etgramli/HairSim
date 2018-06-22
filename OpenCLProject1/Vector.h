@@ -5,7 +5,6 @@
 typedef cl_float3 cl_Vector;
 
 class Vector {
-private:
     float x, y, z;
 
 public:

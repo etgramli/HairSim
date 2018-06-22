@@ -33,7 +33,7 @@ HairPiece::HairPiece(size_t dimX, size_t dimY, size_t dimZ)
     }
 }
 
-HairPiece::HairPiece(cl_HairPiece hairPiece) {
+HairPiece::HairPiece(const cl_HairPiece hairPiece) {
     this->width = hairPiece.sizeX;
     this->length = hairPiece.sizeY;
     this->hairlength = hairPiece.sizeZ;
@@ -149,7 +149,7 @@ unsigned int HairPiece::getHairLength() const {
     return hairlength;
 }
 
-std::vector<float> HairPiece::getCoordinatesForGL() {
+std::vector<float> HairPiece::getCoordinatesForGL() const {
     std::vector<float> out;
 
     for (Link *currentLink : links) {
@@ -164,9 +164,6 @@ std::vector<float> HairPiece::getCoordinatesForGL() {
     }
     return out;
 }
-
-
-
 
 cl_HairPiece HairPiece::getClData() const {
     cl_HairPiece cl_hairPiece;
@@ -276,4 +273,31 @@ bool HairPiece::test(HairPiece *other) const {
 
 bool HairPiece::test(cl_HairPiece hp) const {
     return test(&HairPiece(hp));
+}
+
+
+HairPiece& HairPiece::operator=(const HairPiece& hairPiece2) {
+    if (this == &hairPiece2) {
+        return *this;
+    }
+    if (links.size() > 0) {
+        for (Link *current : links) {
+            delete current;
+        }
+        links.clear();
+    }
+    if (nodes.size() > 0) {
+        for (Node *current : nodes) {
+            delete current;
+        }
+        nodes.clear();
+    }
+
+    for (Node *node : hairPiece2.nodes) {
+        nodes.push_back(new Node(*node));
+    }
+    for (Link *link : hairPiece2.links) {
+        links.push_back(new Link(*link));
+    }
+    return *this;
 }

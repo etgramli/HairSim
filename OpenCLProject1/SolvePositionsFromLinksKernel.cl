@@ -8,7 +8,7 @@ typedef struct {
 } Node;
 
 typedef struct {
-    //IDs in the array of the cl_Nodes
+    // indices in the array of the cl_Nodes
     uint beginNodeId, endNodeId;
 
     float springConstant;
@@ -28,24 +28,25 @@ typedef struct {
 } HairPiece;
 
 
-uint getIngoingLinkIndexFor(__global HairPiece *hp, uint nodeId);
-void move(Node *node, float3 force, float deltaSeconds);
+uint getIngoingLinkIndexFor(__global HairPiece *hp, __global Link *links, uint nodeId);
+void move(__global Node *node, float3 force, float deltaSeconds);
 
-float3 getSpringForce(__global HairPiece *hp, Link *link);
-float3 getLinkForce(__global HairPiece *hp, Link *thisLink, Link *preLink);
+float3 getSpringForce(__global Node *nodes, __global Link *link);
+float3 getLinkForce(__global Node *nodes, __global Link *thisLink, __global Link *preLink);
 
 // Each launched kernel handles one link and therefore two nodes
 __kernel void solvePositionsFromLinksKernel(__global HairPiece *hairPiece,
-                                            __global float3 *forces,
+                                            __global Node *nodes,
+                                            __global Link *links,
                                             __global float *deltaTime,
                                             float deltaSeconds) {
     unsigned int i = get_global_id(0);
-    Link *currentLink = &hairPiece->links[i];
+    __global Link *currentLink = &links[i];
 
     uint a_id = currentLink->beginNodeId;
     uint b_id = currentLink->endNodeId;
-    Node *a = &hairPiece->nodes[a_id];
-    Node *b = &hairPiece->nodes[b_id];
+    __global Node *a = &nodes[a_id];
+    __global Node *b = &nodes[b_id];
 
     // add gravity
     float3 gravitationalAcceleration = (float3)(0.0f, 0.0f, -0.00981f);
@@ -53,15 +54,15 @@ __kernel void solvePositionsFromLinksKernel(__global HairPiece *hairPiece,
     float3 forcesNodeB = gravitationalAcceleration * b->mass;
 
     // add link force
-    uint linkIdx = getIngoingLinkIndexFor(hairPiece, currentLink->beginNodeId);
+    uint linkIdx = getIngoingLinkIndexFor(hairPiece, links, currentLink->beginNodeId);
     if (linkIdx > -1) {
-        Link *pre = &hairPiece->links[linkIdx];
-        float3 linkForce = getLinkForce(hairPiece, currentLink, pre);
+        __global Link *pre = &links[linkIdx];
+        float3 linkForce = getLinkForce(nodes, currentLink, pre);
         forcesNodeB -= linkForce;
     }
 
     //add spring force
-    const float3 springForce = getSpringForce(hairPiece, currentLink);
+    const float3 springForce = getSpringForce(nodes, currentLink);
     forcesNodeB += springForce;
 
     // add wind
@@ -77,10 +78,10 @@ __kernel void solvePositionsFromLinksKernel(__global HairPiece *hairPiece,
     move(b, forcesNodeB, deltaSeconds);
 }
 
-uint getIngoingLinkIndexFor(__global HairPiece *hp, uint nodeId) {
+uint getIngoingLinkIndexFor(__global HairPiece *hp, __global Link *links, uint nodeId) {
     uint index = 0;
     for (uint i = 0; i < hp->numLinks; ++i) {
-        Link *link = &hp->links[i];
+        __global Link *link = &links[i];
         if (link->endNodeId == nodeId) {
             return i;
         }
@@ -89,7 +90,7 @@ uint getIngoingLinkIndexFor(__global HairPiece *hp, uint nodeId) {
 }
 
 
-void move(Node *node, float3 force, float deltaSeconds) {
+void move(__global Node *node, float3 force, float deltaSeconds) {
     if (node->isConst) {
         return;
     }
@@ -106,24 +107,21 @@ void move(Node *node, float3 force, float deltaSeconds) {
 }
 
 
-float3 getSpringForce(__global HairPiece *hp, Link *link) {
-    float3 diff =
-        hp->nodes[link->endNodeId].coordinates
-        - hp->nodes[link->beginNodeId].coordinates;
+float3 getSpringForce(__global Node *nodes, __global Link *link) {
+    float3 diff = nodes[link->endNodeId].coordinates
+        - nodes[link->beginNodeId].coordinates;
     float diffLength = length(diff);
     normalize(diff);
-    float s = link->length - diffLength;
+    const float s = link->length - diffLength;
 
     return diff * (link->springConstant * s);
 };
 
-float3 getLinkForce(__global HairPiece *hp, Link *thisLink, Link *preLink) {
-    float3 a = 
-        hp->nodes[preLink->beginNodeId].coordinates
-        - hp->nodes[preLink->endNodeId].coordinates;
-    float3 b = 
-        hp->nodes[thisLink->endNodeId].coordinates
-        - hp->nodes[thisLink->beginNodeId].coordinates;
+float3 getLinkForce(__global Node *nodes, __global Link *thisLink, __global Link *preLink) {
+    float3 a =  nodes[preLink->beginNodeId].coordinates
+        - nodes[preLink->endNodeId].coordinates;
+    float3 b = nodes[thisLink->endNodeId].coordinates
+        - nodes[thisLink->beginNodeId].coordinates;
     float3 diff = a + b;
     float diffLength = length(diff);
     normalize(diff);
