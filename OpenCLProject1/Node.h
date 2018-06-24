@@ -44,5 +44,5 @@ public:
 
     void move(const Vector force, const float deltaSeconds);
 
-    cl_Node getClData();
+    cl_Node getClData() const;
 };

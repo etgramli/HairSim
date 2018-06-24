@@ -1,6 +1,6 @@
 #include "Node.h"
 
-cl_Node Node::getClData() {
+cl_Node Node::getClData() const {
     cl_Node node;
     node.coordinates = cl_float3();
     node.coordinates.x = x;
@@ -46,7 +46,8 @@ Vector Node::minus(Node const * const b) {
     if (b == NULL) {
         return Vector(x,y,z);
     } else {
-        return Vector(this->x - b->getX(),
+        return Vector(
+            this->x - b->getX(),
             this->y - b->getY(),
             this->z - b->getZ());
     }

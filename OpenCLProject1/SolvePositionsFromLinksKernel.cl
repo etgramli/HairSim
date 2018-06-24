@@ -39,7 +39,7 @@ __kernel void solvePositionsFromLinksKernel(__global HairPiece *hairPiece,
                                             __global Node *nodes,
                                             __global Link *links,
                                             __global float *deltaTime,
-                                            float deltaSeconds) {
+                                            __global float *deltaSeconds) {
     unsigned int i = get_global_id(0);
     __global Link *currentLink = &links[i];
 
@@ -66,7 +66,7 @@ __kernel void solvePositionsFromLinksKernel(__global HairPiece *hairPiece,
     forcesNodeB += springForce;
 
     // add wind
-    (*deltaTime) += deltaSeconds;
+    (*deltaTime) += (*deltaSeconds);
 
     float3 windForce = (float3)(0.09f, -0.08f, 0.05f) * (sin(*deltaTime * 0.02f) + 1.0f);
 
@@ -74,8 +74,8 @@ __kernel void solvePositionsFromLinksKernel(__global HairPiece *hairPiece,
     forcesNodeB += windForce;
 
     // Move nodes
-    move(a, forcesNodeA, deltaSeconds);
-    move(b, forcesNodeB, deltaSeconds);
+    move(a, forcesNodeA, *deltaSeconds);
+    move(b, forcesNodeB, *deltaSeconds);
 }
 
 uint getIngoingLinkIndexFor(__global HairPiece *hp, __global Link *links, uint nodeId) {

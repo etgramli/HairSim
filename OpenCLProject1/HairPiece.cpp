@@ -37,8 +37,7 @@ HairPiece::HairPiece(const cl_HairPiece hairPiece) {
     this->width = hairPiece.sizeX;
     this->length = hairPiece.sizeY;
     this->hairlength = hairPiece.sizeZ;
-    std::cout << "Importing Hair Piece from CL types ("
-        << width << ", " << length << ", " << hairlength << ")" << std::endl;
+    //std::cout << "Importing Hair Piece from CL types (" << width << ", " << length << ", " << hairlength << ")" << std::endl;
 
     std::map<int, Node *> indexToNode;
     for (unsigned int i = 0; i < hairPiece.numNodes; ++i) {
@@ -188,16 +187,15 @@ cl_HairPiece HairPiece::getClData() const {
         nodeToId[currentNode] = i; // Add mapping
         nodeCounter = i + 1;
     }
-    std::cout << "Created " << nodeCounter << " nodes for copying to CL device!" << std::endl;
-    std::cout << "Originally " << cl_hairPiece.numNodes << " nodes exist!" << std::endl << std::endl;
+    //std::cout << "Created " << nodeCounter << " nodes for copying to CL device!" << std::endl;
+    //std::cout << "Originally " << cl_hairPiece.numNodes << " nodes exist!" << std::endl << std::endl;
 
     unsigned int linkCounter = 0;
     for (Link *currentLink : links) {
         cl_hairPiece.links[linkCounter++] = HairPiece::getClLinkForLink(currentLink, &nodeToId);
     }
-    std::cout << "Created " << linkCounter << " links for copying to CL device!" << std::endl;
-    std::cout << "Originally " << cl_hairPiece.numLinks << " links exist!" << std::endl << std::endl;
-
+    //std::cout << "Created " << linkCounter << " links for copying to CL device!" << std::endl;
+    //std::cout << "Originally " << cl_hairPiece.numLinks << " links exist!" << std::endl << std::endl;
 
     return cl_hairPiece;
 }

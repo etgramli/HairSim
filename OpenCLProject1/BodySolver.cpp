@@ -76,26 +76,26 @@ void BodySolver::pSolve_Links(float deltaSeconds) {
     // Copy Array of Nodes
     cl::Event copyNodeEvent;
     err = queue->enqueueWriteBuffer(bufferNodes, CL_TRUE, 0, sizeof(cl_Node) * clHairPiece.numNodes, (void *) clHairPiece.nodes, NULL, &copyNodeEvent);
-    printStatus("Enqueue copying Nodes:", err);
+    if (err != CL_SUCCESS)printStatus("Enqueue copying Nodes:", err);
     // Copy Array of Links
     cl::Event copyLinkEvent;
     err = queue->enqueueWriteBuffer(bufferLinks, CL_TRUE, 0, sizeof(cl_Link) * clHairPiece.numLinks, (void *) clHairPiece.links, NULL, &copyLinkEvent);
-    printStatus("Enqueue copying Nodes:", err);
+    if (err != CL_SUCCESS)printStatus("Enqueue copying Nodes:", err);
 
     // Copy HairPiece
     cl::Event copyHairPieceEvent;
     err = queue->enqueueWriteBuffer(bufferHairPiece, CL_TRUE, 0, sizeof(clHairPiece), (void *) &clHairPiece, NULL, &copyHairPieceEvent);
-    printStatus("Enqueue copying HairPiece:", err);
+    if (err != CL_SUCCESS)printStatus("Enqueue copying HairPiece:", err);
 
     // Copy deltaTime
     cl::Event copyDeltaTimeEvent;
     err = queue->enqueueWriteBuffer(bufferDeltaTime, CL_TRUE, 0, sizeof(float), (void *) &deltaTime, NULL, &copyDeltaTimeEvent);
-    printStatus("Enqueue copying delta time:", err);
+    if (err != CL_SUCCESS)printStatus("Enqueue copying delta time:", err);
 
     // Copy deltaSeconds
     cl::Event copyDeltaSecondsEvent;
     err = queue->enqueueWriteBuffer(bufferDeltaSeconds, CL_TRUE, 0, sizeof(float), (void *) &this->deltaSeconds, NULL, &copyDeltaSecondsEvent);
-    printStatus("Enqueue copying delta secons:", err);
+    if (err != CL_SUCCESS)printStatus("Enqueue copying delta secons:", err);
 
     std::vector<cl::Event> copiedData;
     copiedData.push_back(copyNodeEvent);
@@ -106,31 +106,40 @@ void BodySolver::pSolve_Links(float deltaSeconds) {
 
     // Set kernel arguments
     err = kernel.setArg(0, bufferHairPiece);
-    printStatus("Set kernel arg 0: ", err);
+    if (err != CL_SUCCESS)printStatus("Set kernel arg 0: ", err);
     err = kernel.setArg(1, bufferNodes);
-    printStatus("Set kernel arg 1: ", err);
+    if (err != CL_SUCCESS)printStatus("Set kernel arg 1: ", err);
     err = kernel.setArg(2, bufferLinks);
-    printStatus("Set kernel arg 2: ", err);
+    if (err != CL_SUCCESS)printStatus("Set kernel arg 2: ", err);
     err = kernel.setArg(3, bufferDeltaTime);
-    printStatus("Set kernel arg 3: ", err);
+    if (err != CL_SUCCESS)printStatus("Set kernel arg 3: ", err);
     err = kernel.setArg(4, bufferDeltaSeconds);
-    printStatus("Set kernel arg 4: ", err);
+    if (err != CL_SUCCESS)printStatus("Set kernel arg 4: ", err);
     
     // Launch kernel
     cl::Event kernelEvent;
     err = queue->enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(clHairPiece.numLinks), cl::NullRange, &copiedData, &kernelEvent);
-    printStatus("Launching Body Solver kernel: ", err);
+    if (err != CL_SUCCESS)printStatus("Launching Body Solver kernel: ", err);
 
-    // Copy back
     std::vector<cl::Event> kernelEventVector;
     kernelEventVector.push_back(kernelEvent);
+
+    // Copy back
     cl::Event copyNodesBackEvent;
     err = queue->enqueueReadBuffer(bufferNodes, CL_TRUE, 0, sizeof(cl_Node) * clHairPiece.numNodes, clHairPiece.nodes, &kernelEventVector, &copyNodesBackEvent);
+    if (err != CL_SUCCESS)printStatus("Copy back nodes: ", err);
 
     cl::Event copyLinksBackEvent;
     err = queue->enqueueReadBuffer(bufferLinks, CL_TRUE, 0, sizeof(cl_Link) * clHairPiece.numLinks, clHairPiece.links, &kernelEventVector, &copyLinksBackEvent);
+    if (err != CL_SUCCESS)printStatus("Copy back links: ", err);
+
+    cl::Event copyDeltaTimeBackEvent;
+    err = queue->enqueueReadBuffer(bufferDeltaTime, CL_TRUE, 0, sizeof(cl_float), &deltaTime, &kernelEventVector, &copyDeltaTimeBackEvent);
+    if (err != CL_SUCCESS)printStatus("Copy back delta links: ", err);
+
     copyNodeEvent.wait();
     copyLinksBackEvent.wait();
+    copyDeltaTimeBackEvent.wait();
 
     // Convert back to CPU data types
     delete hp;
