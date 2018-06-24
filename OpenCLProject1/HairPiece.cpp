@@ -187,16 +187,12 @@ cl_HairPiece HairPiece::getClData() const {
         nodeToId[currentNode] = i; // Add mapping
         nodeCounter = i + 1;
     }
-    //std::cout << "Created " << nodeCounter << " nodes for copying to CL device!" << std::endl;
-    //std::cout << "Originally " << cl_hairPiece.numNodes << " nodes exist!" << std::endl << std::endl;
 
     unsigned int linkCounter = 0;
     for (Link *currentLink : links) {
         cl_hairPiece.links[linkCounter++] = HairPiece::getClLinkForLink(currentLink, &nodeToId);
     }
-    //std::cout << "Created " << linkCounter << " links for copying to CL device!" << std::endl;
-    //std::cout << "Originally " << cl_hairPiece.numLinks << " links exist!" << std::endl << std::endl;
-
+    
     return cl_hairPiece;
 }
 

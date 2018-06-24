@@ -28,7 +28,7 @@ typedef struct {
 } HairPiece;
 
 
-uint getIngoingLinkIndexFor(__global HairPiece *hp, __global Link *links, uint nodeId);
+uint getIngoingLinkIndexFor(uint numLinks, __global Link *links, uint nodeId);
 void move(__global Node *node, float3 force, float deltaSeconds);
 
 float3 getSpringForce(__global Node *nodes, __global Link *link);
@@ -41,29 +41,26 @@ __kernel void solvePositionsFromLinksKernel(__global HairPiece *hairPiece,
                                             __global float *deltaTime,
                                             __global float *deltaSeconds) {
     unsigned int i = get_global_id(0);
-    __global Link *currentLink = &links[i];
 
-    uint a_id = currentLink->beginNodeId;
-    uint b_id = currentLink->endNodeId;
+    uint a_id = links[i].beginNodeId;
+    uint b_id = links[i].endNodeId;
     __global Node *a = &nodes[a_id];
     __global Node *b = &nodes[b_id];
 
     // add gravity
-    float3 gravitationalAcceleration = (float3)(0.0f, 0.0f, -0.00981f);
+    const float3 gravitationalAcceleration = (float3)(0.0f, 0.0f, -0.00981f);
     float3 forcesNodeA = gravitationalAcceleration * a->mass;
     float3 forcesNodeB = gravitationalAcceleration * b->mass;
 
     // add link force
-    uint linkIdx = getIngoingLinkIndexFor(hairPiece, links, currentLink->beginNodeId);
+    uint linkIdx = getIngoingLinkIndexFor(hairPiece->numLinks, links, links[i].beginNodeId);
     if (linkIdx > -1) {
-        __global Link *pre = &links[linkIdx];
-        float3 linkForce = getLinkForce(nodes, currentLink, pre);
+        float3 linkForce = getLinkForce(nodes, &links[i], &links[linkIdx]);
         forcesNodeB -= linkForce;
     }
 
     //add spring force
-    const float3 springForce = getSpringForce(nodes, currentLink);
-    forcesNodeB += springForce;
+    forcesNodeB += getSpringForce(nodes, &links[i]);
 
     // add wind
     (*deltaTime) += (*deltaSeconds);
@@ -78,11 +75,9 @@ __kernel void solvePositionsFromLinksKernel(__global HairPiece *hairPiece,
     move(b, forcesNodeB, *deltaSeconds);
 }
 
-uint getIngoingLinkIndexFor(__global HairPiece *hp, __global Link *links, uint nodeId) {
-    uint index = 0;
-    for (uint i = 0; i < hp->numLinks; ++i) {
-        __global Link *link = &links[i];
-        if (link->endNodeId == nodeId) {
+uint getIngoingLinkIndexFor(uint numLinks, __global Link *links, uint nodeId) {
+    for (uint i = 0; i < numLinks; ++i) {
+        if (links[i].endNodeId == nodeId) {
             return i;
         }
     }
@@ -91,10 +86,8 @@ uint getIngoingLinkIndexFor(__global HairPiece *hp, __global Link *links, uint n
 
 
 void move(__global Node *node, float3 force, float deltaSeconds) {
-    if (node->isConst) {
-        return;
-    }
-    float3 v = force * (deltaSeconds / node->mass) + (node->velocity * 0.9f);// damping factor
+    if (node->isConst == true) return;
+    float3 v = force * (deltaSeconds / node->mass) + (node->velocity * 0.9f);
     node->coordinates += v;
     node->velocity = v;
 

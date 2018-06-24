@@ -12,7 +12,6 @@ cl_Node Node::getClData() const {
 	node.velocity.x = velocity.getX();
 	node.velocity.y = velocity.getY();
 	node.velocity.z = velocity.getZ();
-
     return node;
 }
 

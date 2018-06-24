@@ -55,7 +55,7 @@ void BodySolverCPU::pSolve_Links(const float deltaSeconds) {
 				forcesNodeB -= linkForce;
 			}
 
-			//add spring force
+			// add spring force
             const Vector springForce = currentLink->getSpringForce();
 			forcesNodeB += springForce;
 
