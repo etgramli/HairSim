@@ -5,6 +5,9 @@
 #include <iostream>
 
 BodySolver::BodySolver(cl::Context *context, cl::CommandQueue *queue) {
+    this->deltaTime = 0;
+    this->deltaSeconds = 0;
+
     this->context = context;
     this->queue = queue;
 
@@ -27,6 +30,9 @@ BodySolver::BodySolver(cl::Context *context, cl::CommandQueue *queue) {
     // float deltaTime = 0.0f
     this->bufferDeltaTime = cl::Buffer(*context, CL_MEM_READ_WRITE, sizeof(cl_float), NULL, &err);
     printStatus("Create buffer for delta time: ", err);
+    // float deltaSeconds
+    this->bufferDeltaSeconds = cl::Buffer(*context, CL_MEM_READ_WRITE, sizeof(cl_float), NULL, &err);
+    printStatus("Create buffer for delta seconds: ", err);
 
     // Read kernel file to char array
     std::ifstream in(kernelFileName);
@@ -62,6 +68,7 @@ BodySolver::~BodySolver() {
 }
 
 void BodySolver::solveLinksForPosition(float deltaSeconds) {
+    this->deltaSeconds = deltaSeconds;
     cl_HairPiece clHairPiece = hp->getClData();
 
     cl_int err = CL_SUCCESS;
@@ -87,7 +94,7 @@ void BodySolver::solveLinksForPosition(float deltaSeconds) {
 
     // Copy deltaSeconds
     cl::Event copyDeltaSecondsEvent;
-    err = queue->enqueueWriteBuffer(bufferDeltaSeconds, CL_TRUE, 0, sizeof(float), (void *) &deltaSeconds, NULL, &copyDeltaSecondsEvent);
+    err = queue->enqueueWriteBuffer(bufferDeltaSeconds, CL_TRUE, 0, sizeof(float), (void *) &this->deltaSeconds, NULL, &copyDeltaSecondsEvent);
     printStatus("Enqueue copying delta secons:", err);
 
     std::vector<cl::Event> copiedData;

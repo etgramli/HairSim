@@ -9,7 +9,8 @@ class BodySolver {
     std::string kernelName = "solvePositionsFromLinksKernel";
 
     HairPiece *hp;
-    float deltaTime = 0;
+    float deltaTime;
+    float deltaSeconds;
 
     cl::Buffer bufferNodes;
     cl::Buffer bufferLinks;
