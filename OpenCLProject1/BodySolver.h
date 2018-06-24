@@ -29,5 +29,6 @@ public:
     BodySolver(cl::Context *context, cl::CommandQueue *queue);
     ~BodySolver();
 
-    void solveLinksForPosition(const float deltaSeconds);
+    void pSolve_Links(const float deltaSeconds);
+    HairPiece* getHairPiece() const;
 };

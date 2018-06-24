@@ -1,12 +1,15 @@
 #pragma once
 
 #include "Window.hpp"
+#include "BodySolver.h"
 #include <fstream>
 #include <sstream>
 #include <vector>
 #include <time.h>
 #include <cmath>
 
+// Global BodySolver in main.cpp
+extern BodySolver *bodySolver;
 
 void initializeOpenGL();
 void drawOpenGL(Window const * const _window, float deltaSeconds);

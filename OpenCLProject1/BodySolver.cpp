@@ -67,7 +67,7 @@ BodySolver::~BodySolver() {
     delete hp;
 }
 
-void BodySolver::solveLinksForPosition(float deltaSeconds) {
+void BodySolver::pSolve_Links(float deltaSeconds) {
     this->deltaSeconds = deltaSeconds;
     cl_HairPiece clHairPiece = hp->getClData();
 
@@ -124,7 +124,19 @@ void BodySolver::solveLinksForPosition(float deltaSeconds) {
     // Copy back
     std::vector<cl::Event> kernelEventVector;
     kernelEventVector.push_back(kernelEvent);
-    cl::Event copyBackEvent;
-    err = queue->enqueueReadBuffer(bufferNodes, CL_TRUE, 0, sizeof(cl_Node) * clHairPiece.numNodes, clHairPiece.nodes, &kernelEventVector, &copyBackEvent);
-    copyBackEvent.wait();
+    cl::Event copyNodesBackEvent;
+    err = queue->enqueueReadBuffer(bufferNodes, CL_TRUE, 0, sizeof(cl_Node) * clHairPiece.numNodes, clHairPiece.nodes, &kernelEventVector, &copyNodesBackEvent);
+
+    cl::Event copyLinksBackEvent;
+    err = queue->enqueueReadBuffer(bufferLinks, CL_TRUE, 0, sizeof(cl_Link) * clHairPiece.numLinks, clHairPiece.links, &kernelEventVector, &copyLinksBackEvent);
+    copyNodeEvent.wait();
+    copyLinksBackEvent.wait();
+
+    // Convert back to CPU data types
+    delete hp;
+    hp = new HairPiece(clHairPiece);
+}
+
+HairPiece* BodySolver::getHairPiece() const {
+    return hp;
 }

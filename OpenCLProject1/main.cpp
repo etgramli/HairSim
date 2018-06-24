@@ -5,12 +5,11 @@
 
 #include "clVectorAdd.h"
 #include "clHelper.h"
-
 #include "GLwindow.h"
-
 #include "BodySolver.h"
-
 #include "HairPiece.h"
+
+BodySolver *bodySolver;
 
 // Must be in opposite order (here AMD would be selected first, then Nvidia, at last Intel)
 const std::vector<std::string> prefferedOpenClVendors = {
@@ -65,14 +64,15 @@ int main() {
         cl::CommandQueue queueKernel(context, devices[0], 0, &err);
         printStatus("Create kernel queue:", err);
 
-        BodySolver bs = BodySolver(&context, &queueKernel);
-        bs.solveLinksForPosition(1);
+        bodySolver = new BodySolver(&context, &queueKernel);
+        //bodySolver->pSolve_Links(1);
 
 		openGLWindow();
     } catch (std::exception& e) {
         std::cout << e.what() << std::endl;
     }
 
+    delete bodySolver;
     return 0;
 }
 
@@ -143,8 +143,7 @@ void openGLWindow() {
 	clock_t unprocessedTime = 0;
 	clock_t lastTime = clock();
 
-	while (window->isOpen())
-	{
+	while (window->isOpen()) {
 		clock_t startTime = clock();
 		clock_t passedTime = startTime - lastTime;
 		lastTime = startTime;
@@ -159,10 +158,7 @@ void openGLWindow() {
 
 			if (frameCounter >= 1.0f) {
 				float totalTime = 1000.0f * frameCounter / (float)frames;
-
-				//printf("Total Time: %f ms\n", totalTime);
-				//printf("%f fps\n", frames);
-				frames = 0;
+                frames = 0;
 				frameCounter = 0;
 			}
 		}

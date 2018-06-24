@@ -1,6 +1,5 @@
 #include "GLwindow.h"
 #include "HairPiece.h"
-#include "BodySolverCPU.h"
 
 
 GLuint g_vertexArrayId = 0;
@@ -8,10 +7,8 @@ GLuint g_vertexArrayId2 = 1;
 GLuint g_shaderId = 0;
 
 std::vector<GLfloat> hairColors;
-BodySolverCPU bodySolver = BodySolverCPU();
 
-GLuint loadShaders(const char * vertex_file_path, const char * fragment_file_path)
-{
+GLuint loadShaders(const char * vertex_file_path, const char * fragment_file_path) {
 	// Create the shaders
 	GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
@@ -19,15 +16,12 @@ GLuint loadShaders(const char * vertex_file_path, const char * fragment_file_pat
 	// Read the Vertex Shader code from the file
 	std::string VertexShaderCode;
 	std::ifstream VertexShaderStream(vertex_file_path, std::ios::in);
-	if (VertexShaderStream.is_open())
-	{
+	if (VertexShaderStream.is_open()) {
 		std::stringstream sstr;
 		sstr << VertexShaderStream.rdbuf();
 		VertexShaderCode = sstr.str();
 		VertexShaderStream.close();
-	}
-	else
-	{
+	} else {
 		printf("Impossible to open %s. Are you in the right directory ? Don't forget to read the FAQ !\n", vertex_file_path);
 		getchar();
 		return 0;
@@ -36,8 +30,7 @@ GLuint loadShaders(const char * vertex_file_path, const char * fragment_file_pat
 	// Read the Fragment Shader code from the file
 	std::string FragmentShaderCode;
 	std::ifstream FragmentShaderStream(fragment_file_path, std::ios::in);
-	if (FragmentShaderStream.is_open())
-	{
+	if (FragmentShaderStream.is_open()) {
 		std::stringstream sstr;
 		sstr << FragmentShaderStream.rdbuf();
 		FragmentShaderCode = sstr.str();
@@ -56,8 +49,7 @@ GLuint loadShaders(const char * vertex_file_path, const char * fragment_file_pat
 	// Check Vertex Shader
 	glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
 	glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-	if (InfoLogLength > 0)
-	{
+	if (InfoLogLength > 0) {
 		std::vector<char> VertexShaderErrorMessage(InfoLogLength + 1);
 		glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
 		printf("%s\n", &VertexShaderErrorMessage[0]);
@@ -72,8 +64,7 @@ GLuint loadShaders(const char * vertex_file_path, const char * fragment_file_pat
 	// Check Fragment Shader
 	glGetShaderiv(FragmentShaderID, GL_COMPILE_STATUS, &Result);
 	glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-	if (InfoLogLength > 0)
-	{
+	if (InfoLogLength > 0) {
 		std::vector<char> FragmentShaderErrorMessage(InfoLogLength + 1);
 		glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
 		printf("%s\n", &FragmentShaderErrorMessage[0]);
@@ -89,8 +80,7 @@ GLuint loadShaders(const char * vertex_file_path, const char * fragment_file_pat
 	// Check the program
 	glGetProgramiv(ProgramID, GL_LINK_STATUS, &Result);
 	glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-	if (InfoLogLength > 0)
-	{
+	if (InfoLogLength > 0) {
 		std::vector<char> ProgramErrorMessage(InfoLogLength + 1);
 		glGetProgramInfoLog(ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
 		printf("%s\n", &ProgramErrorMessage[0]);
@@ -105,8 +95,7 @@ GLuint loadShaders(const char * vertex_file_path, const char * fragment_file_pat
 	return ProgramID;
 }
 
-std::vector<GLfloat> generateFloor()
-{
+std::vector<GLfloat> generateFloor() {
 	GLsizei const size = 18;
 	GLfloat vertices[size];
 
@@ -120,16 +109,14 @@ std::vector<GLfloat> generateFloor()
 
 	std::vector<GLfloat> mesh;
 
-	for (int index = 0; index < size; index++)
-	{
+	for (int index = 0; index < size; index++) {
 		mesh.push_back(vertices[index]);
 	}
 
 	return mesh;
 }
 
-std::vector<GLfloat> generateFloorColorData()
-{
+std::vector<GLfloat> generateFloorColorData() {
 	GLsizei const size = 18;
 
 	GLfloat raw[size];
@@ -139,16 +126,14 @@ std::vector<GLfloat> generateFloorColorData()
 
 	std::vector<GLfloat> colors;
 
-	for (int index = 0; index < size; index++)
-	{
+	for (int index = 0; index < size; ++index) {
 		colors.push_back(raw[index]);
 	}
 
 	return colors;
 }
 
-void initializeOpenGL()
-{
+void initializeOpenGL() {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LINE_SMOOTH);
 	glLineWidth(2.0f);
@@ -179,7 +164,7 @@ void initializeOpenGL()
 	glBindVertexArray(0);
 
 	srand((unsigned)time(NULL));
-	for (GLfloat c : bodySolver.getHairPiece()->getCoordinatesForGL()) {
+	for (GLfloat c : bodySolver->getHairPiece()->getCoordinatesForGL()) {
 		float r = (float)rand() / RAND_MAX;
 		hairColors.push_back(0.98f - r);
 		hairColors.push_back(0.941f - r);
@@ -190,8 +175,7 @@ void initializeOpenGL()
 	g_shaderId = loadShaders("vertex.glsl", "fragment.glsl");
 }
 
-void drawOpenGL(Window const * const _window, float deltaSeconds)
-{
+void drawOpenGL(Window const * const _window, float deltaSeconds) {
 	updateHair((float) deltaSeconds);
 
 	glUseProgram(g_shaderId);
@@ -218,7 +202,7 @@ void drawOpenGL(Window const * const _window, float deltaSeconds)
 
 	glBindVertexArray(g_vertexArrayId2);
 
-	glDrawArrays(GL_LINES, 0, bodySolver.getHairPiece()->getCoordinatesForGL().size() / 3.0f);//number of vertices
+	glDrawArrays(GL_LINES, 0, bodySolver->getHairPiece()->getCoordinatesForGL().size() / 3.0f);//number of vertices
 
 	glBindVertexArray(0);
 
@@ -226,14 +210,14 @@ void drawOpenGL(Window const * const _window, float deltaSeconds)
 }
 
 void updateHair(const float deltaSeconds) {
-	bodySolver.pSolve_Links(deltaSeconds);
+	bodySolver->pSolve_Links(deltaSeconds);
 	glGenVertexArrays(1, &g_vertexArrayId2);
 	glBindVertexArray(g_vertexArrayId2);
 
 	GLuint vertexBufferId = 1;
 	glGenBuffers(1, &vertexBufferId);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-	std::vector<GLfloat> const hairMesh = bodySolver.getHairPiece()->getCoordinatesForGL();
+	std::vector<GLfloat> const hairMesh = bodySolver->getHairPiece()->getCoordinatesForGL();
 	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * hairMesh.size(), &hairMesh[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
