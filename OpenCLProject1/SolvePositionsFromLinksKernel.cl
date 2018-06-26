@@ -7,7 +7,7 @@ typedef struct __attribute__((packed)) {
 	float mass;
 } Node;
 
-typedef struct {
+typedef struct __attribute__((packed)) {
 	// indices in the array of the cl_Nodes
 	uint beginNodeId, endNodeId;
 
@@ -15,7 +15,7 @@ typedef struct {
 	float length;
 } Link;
 
-typedef struct {
+typedef struct __attribute__((packed)) {
 	uint sizeX;
 	uint sizeY;
 	uint sizeZ;
@@ -35,7 +35,8 @@ float3 getSpringForce(__global Node *nodes, __global Link *link);
 float3 getLinkForce(__global Node *nodes, __global Link *thisLink, __global Link *preLink);
 
 // Each launched kernel handles one link and therefore two nodes
-__kernel void solvePositionsFromLinksKernel(__global HairPiece *hairPiece,
+__kernel void solvePositionsFromLinksKernel(
+    __global HairPiece *hairPiece,
 	__global Node *nodes,
 	__global Link *links,
 	__global float *deltaTime,
