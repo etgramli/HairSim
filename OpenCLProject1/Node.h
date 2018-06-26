@@ -8,7 +8,7 @@
 typedef struct {
     cl_float3 coordinates;
     cl_float3 velocity;
-    cl_bool isConst;
+    int isConst;
     cl_float mass;
 } cl_Node;
 
@@ -27,9 +27,7 @@ public:
          const bool isConst = false,
          const Vector velocity = Vector(0,0,0))
         : x(x), y(y), z(z), mass(mass), isConstant(isConst), velocity(velocity) {}
-    Node(const cl_Node node) : x(node.coordinates.x), y(node.coordinates.y), z(node.coordinates.z), isConstant(node.isConst), mass(node.mass) {
-        velocity = Vector(node.velocity.x, node.velocity.y, node.velocity.z);
-    }
+    Node(const cl_Node node) : x(node.coordinates.x), y(node.coordinates.y), z(node.coordinates.z), isConstant(node.isConst == 1 ? true : false), mass(node.mass), velocity(Vector(node.velocity.x, node.velocity.y, node.velocity.z)) {}
 
     float getX() const;
     float getY() const;

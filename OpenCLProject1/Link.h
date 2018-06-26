@@ -5,6 +5,14 @@
 
 #define PI 3.14159265f
 
+typedef struct {
+	//IDs in the array of the cl_Nodes
+	cl_uint beginNodeId, endNodeId;
+
+	cl_float springConstant;
+	cl_float length;
+} cl_Link;
+
 class Link {
 private:
 	float springConstant;

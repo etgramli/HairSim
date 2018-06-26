@@ -137,7 +137,7 @@ void BodySolver::pSolve_Links(float deltaSeconds) {
     err = queue->enqueueReadBuffer(bufferDeltaTime, CL_TRUE, 0, sizeof(cl_float), &deltaTime, &kernelEventVector, &copyDeltaTimeBackEvent);
     if (err != CL_SUCCESS)printStatus("Copy back delta links: ", err);
 
-    copyNodeEvent.wait();
+    copyNodesBackEvent.wait();
     copyLinksBackEvent.wait();
     copyDeltaTimeBackEvent.wait();
 

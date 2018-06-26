@@ -166,9 +166,9 @@ void initializeOpenGL() {
 	srand((unsigned)time(NULL));
 	for (GLfloat c : bodySolver->getHairPiece()->getCoordinatesForGL()) {
 		float r = (float)rand() / RAND_MAX;
-		hairColors.push_back(0.98f - r);
-		hairColors.push_back(0.941f - r);
-		hairColors.push_back(0.745f - r);
+		hairColors.push_back(0.98f - r * 0.8f);
+		hairColors.push_back(0.941f - r * 0.8f);
+		hairColors.push_back(0.745f - r * 0.8f);
 	}
 	updateHair(0);
 

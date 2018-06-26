@@ -6,13 +6,6 @@
 #include "Link.h"
 #include <time.h>
 
-typedef struct {
-    //IDs in the array of the cl_Nodes
-    cl_uint beginNodeId, endNodeId;
-
-    cl_float springConstant;
-    cl_float length;
-} cl_Link;
 
 typedef struct {
     cl_uint sizeX;

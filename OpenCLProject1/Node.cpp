@@ -6,7 +6,7 @@ cl_Node Node::getClData() const {
     node.coordinates.x = x;
     node.coordinates.y = y;
     node.coordinates.z = z;
-    node.isConst = isConstant ? CL_TRUE : CL_FALSE;
+    node.isConst = isConstant ? 1 : 0;
 	node.mass = mass;
 	node.velocity = cl_float3();
 	node.velocity.x = velocity.getX();
