@@ -45,7 +45,7 @@ int main() {
     std::string info;
     err = plat.getInfo(CL_PLATFORM_NAME, &info);
     if (err == CL_SUCCESS) {
-        std::cout << "Chose platform: " << std::endl
+        std::cout << std::endl << "Chose platform: " << std::endl
             << "\t" << plat.getInfo<CL_PLATFORM_VENDOR>() << std::endl
             << "\t" << info << std::endl
             << "\t" << plat.getInfo<CL_PLATFORM_VERSION>() << std::endl
@@ -65,8 +65,7 @@ int main() {
         printStatus("Create kernel queue:", err);
 
         bodySolver = new BodySolver(&context, &queueKernel);
-        //bodySolver->pSolve_Links(1);
-
+        
 		openGLWindow();
     } catch (std::exception& e) {
         std::cout << e.what() << std::endl;
@@ -80,7 +79,7 @@ cl::Platform getPlatform(cl_device_type type,
                          unsigned int openclMajorVersion,
                          std::vector<std::string> vendors) {
     const std::string versionString = "OpenCL " + std::to_string(openclMajorVersion) + ".";
-    cl_int err;
+    cl_int err = CL_SUCCESS;
     std::vector<cl::Platform> allPlatforms;
     cl::Platform::get(&allPlatforms);
 
@@ -88,11 +87,14 @@ cl::Platform getPlatform(cl_device_type type,
     cl::Platform plat;
     std::vector<cl::Platform> platformsWtypeANDversion;
     for (cl::Platform &current : allPlatforms) {
-        std::string platformVersion = current.getInfo<CL_PLATFORM_VERSION>();
+        std::cout << "Plattform: " << current.getInfo<CL_PLATFORM_NAME>() << "-";
+        printStatus("", err);
+        std::string platformVersion = current.getInfo<CL_PLATFORM_VERSION>(&err);
+        printStatus("\tGetting platform version: ", err);
         if (platformVersion.find(versionString) != std::string::npos) {
             std::vector<cl::Device> devices;
-            // ERROR CHECKING
-            current.getDevices(CL_DEVICE_TYPE_GPU, &devices);
+            err = current.getDevices(CL_DEVICE_TYPE_GPU, &devices);
+            printStatus("\tGetting devices from platform: ", err);
             if (devices.size() > 0) {
                 platformsWtypeANDversion.push_back(current);
             }
