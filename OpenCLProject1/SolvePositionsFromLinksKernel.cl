@@ -28,19 +28,19 @@ typedef struct __attribute__((packed)) {
 } HairPiece;
 
 
-uint getIngoingLinkIndexFor(uint numLinks, __global Link *links, uint nodeId);
+uint getIngoingLinkIndexFor(uint numLinks, __constant Link *links, uint nodeId);
 void move(__global Node *node, float3 force, float deltaSeconds);
 
-float3 getSpringForce(__global Node *nodes, __global Link *link);
-float3 getLinkForce(__global Node *nodes, __global Link *thisLink, __global Link *preLink);
+float3 getSpringForce(__global Node *nodes, __constant Link *link);
+float3 getLinkForce(__global Node *nodes, __constant Link *thisLink, __constant Link *preLink);
 
 // Each launched kernel handles one link and therefore two nodes
 __kernel void solvePositionsFromLinksKernel(
-    __global HairPiece *hairPiece,
+    __constant HairPiece *hairPiece,
 	__global Node *nodes,
-	__global Link *links,
+    __constant Link *links,
 	__global float *deltaTime,
-	__global float *deltaSeconds) {
+    __constant float *deltaSeconds) {
 	unsigned int i = get_global_id(0);
 
 	uint a_id = links[i].beginNodeId;
@@ -76,7 +76,7 @@ __kernel void solvePositionsFromLinksKernel(
 	move(b, forcesNodeB, *deltaSeconds);
 }
 
-uint getIngoingLinkIndexFor(uint numLinks, __global Link *links, uint nodeId) {
+uint getIngoingLinkIndexFor(uint numLinks, __constant Link *links, uint nodeId) {
 	for (uint i = 0; i < numLinks; ++i) {
 		if (links[i].endNodeId == nodeId) {
 			return i;
@@ -101,7 +101,7 @@ void move(__global Node *node, float3 force, float deltaSeconds) {
 }
 
 
-float3 getSpringForce(__global Node *nodes, __global Link *link) {
+float3 getSpringForce(__global Node *nodes, __constant Link *link) {
 	float3 diff = nodes[link->endNodeId].coordinates
 		- nodes[link->beginNodeId].coordinates;
 	float diffLength = length(diff);
@@ -111,7 +111,7 @@ float3 getSpringForce(__global Node *nodes, __global Link *link) {
 	return diff * (link->springConstant * s);
 };
 
-float3 getLinkForce(__global Node *nodes, __global Link *thisLink, __global Link *preLink) {
+float3 getLinkForce(__global Node *nodes, __constant Link *thisLink, __constant Link *preLink) {
 	float3 a = nodes[preLink->beginNodeId].coordinates
 		- nodes[preLink->endNodeId].coordinates;
 	float3 b = nodes[thisLink->endNodeId].coordinates

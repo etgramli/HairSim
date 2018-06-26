@@ -7,6 +7,7 @@
 class BodySolver {
     std::string kernelFileName = "SolvePositionsFromLinksKernel.cl";
     std::string kernelName = "solvePositionsFromLinksKernel";
+    const char *buildArgs = "-cl-mad-enable -cl-no-signed-zeros -cl-finite-math-only";
 
     HairPiece *hp;
     float deltaTime;

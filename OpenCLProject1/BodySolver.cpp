@@ -7,17 +7,13 @@
 BodySolver::BodySolver(cl::Context *context, cl::CommandQueue *queue) {
     this->deltaTime = 0;
     this->deltaSeconds = 0;
+    hp = new HairPiece();
 
     this->context = context;
     this->queue = queue;
-
-    hp = new HairPiece();
-
-
     std::cout << std::endl <<  "--- cl Kernel BodySolver setup ---" << std::endl;
 
     cl_int err = CL_SUCCESS;
-    // ToDo: Buffers
     // Nodes
     this->bufferNodes = cl::Buffer(*context, CL_MEM_READ_WRITE, sizeof(cl_Node) * hp->getNumberOfNodes(), NULL, &err);
     printStatus("Create buffer for Nodes: ", err);
@@ -31,7 +27,7 @@ BodySolver::BodySolver(cl::Context *context, cl::CommandQueue *queue) {
     this->bufferDeltaTime = cl::Buffer(*context, CL_MEM_READ_WRITE, sizeof(cl_float), NULL, &err);
     printStatus("Create buffer for delta time: ", err);
     // float deltaSeconds
-    this->bufferDeltaSeconds = cl::Buffer(*context, CL_MEM_READ_WRITE, sizeof(cl_float), NULL, &err);
+    this->bufferDeltaSeconds = cl::Buffer(*context, CL_MEM_READ_ONLY, sizeof(cl_float), NULL, &err);
     printStatus("Create buffer for delta seconds: ", err);
 
     // Read kernel file to char array
@@ -47,7 +43,7 @@ BodySolver::BodySolver(cl::Context *context, cl::CommandQueue *queue) {
     printStatus("Context.getInfo<CL_CONTEXT_DEVICES>: ", err);
     
     err = CL_SUCCESS;
-    err = program.build(devices);
+    err = program.build(devices, buildArgs);
     printStatus("Build program: ", err);
     if (err != CL_SUCCESS) {
         char log[65536];
