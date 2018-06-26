@@ -54,7 +54,7 @@ __kernel void solvePositionsFromLinksKernel(__global HairPiece *hairPiece,
 
 	// add link force
 	uint linkIdx = getIngoingLinkIndexFor(hairPiece->numLinks, links, links[i].beginNodeId);
-	if (linkIdx > -1) {
+	if (linkIdx != -1) {
 		float3 linkForce = getLinkForce(nodes, &links[i], &links[linkIdx]);
 		forcesNodeB -= linkForce;
 	}
@@ -65,7 +65,7 @@ __kernel void solvePositionsFromLinksKernel(__global HairPiece *hairPiece,
 	// add wind
 	(*deltaTime) += (*deltaSeconds);
 
-	float3 windForce = (float3)(0.09f, -0.08f, 0.05f) * (sin(*deltaTime * 0.02f) + 1.0f);
+	float3 windForce = (float3)(0.09f, -0.08f, 0.05f) * (sin(*deltaTime * 1.0f) + 1.0f);
 
 	forcesNodeA += windForce;
 	forcesNodeB += windForce;
