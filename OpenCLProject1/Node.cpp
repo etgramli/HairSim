@@ -6,7 +6,7 @@ cl_Node Node::getClData() const {
     node.coordinates.x = x;
     node.coordinates.y = y;
     node.coordinates.z = z;
-    node.isConst = isConstant ? 1 : 0;
+    node.isConst = isConstant ? CL_TRUE : CL_FALSE;
 	node.mass = mass;
 	node.velocity = cl_float3();
 	node.velocity.x = velocity.getX();
@@ -14,6 +14,24 @@ cl_Node Node::getClData() const {
 	node.velocity.z = velocity.getZ();
     return node;
 }
+
+
+Node::Node(const float x, const float y, const float z, const float mass, const bool isConst, const Vector velocity) : isConstant(isConst) {
+    this->x = x;
+    this->y = y;
+    this->z = z;
+    this->mass = mass;
+    this->velocity = velocity;
+}
+
+Node::Node(const cl_Node node) : isConstant(node.isConst == CL_TRUE ? true : false) {
+    x = node.coordinates.x;
+    y = node.coordinates.y;
+    z = node.coordinates.z;
+    mass = node.mass;
+    velocity = Vector(node.velocity.x, node.velocity.y, node.velocity.z);
+}
+
 
 
 float Node::getX() const {

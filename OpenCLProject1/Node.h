@@ -25,9 +25,8 @@ public:
          const float z,
          const float mass = 1.0f,
          const bool isConst = false,
-         const Vector velocity = Vector(0,0,0))
-        : x(x), y(y), z(z), mass(mass), isConstant(isConst), velocity(velocity) {}
-    Node(const cl_Node node) : x(node.coordinates.x), y(node.coordinates.y), z(node.coordinates.z), isConstant(node.isConst == 1 ? true : false), mass(node.mass), velocity(Vector(node.velocity.x, node.velocity.y, node.velocity.z)) {}
+         const Vector velocity = Vector(0,0,0));
+    Node(const cl_Node node);
 
     float getX() const;
     float getY() const;
