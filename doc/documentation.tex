@@ -98,6 +98,31 @@ For each time step BodySolver calls the kernel; before that, the nodes and links
 \subsection{Architecture}
 
 \subsection{OpenCL}
+The general flow of the program is as follows and will be discussed in this section:
+\begin{enumerate}
+	\item List all OpenCL platforms with GPU devices and major version 1 (or 2 alternatively)
+	\item Select platform according to the preffered vendor list below
+	\item Create OpenCL context and command queue for the first device of the chosen platform
+	\item Create BodySolver with context and command queue and for each time step:
+	\begin{enumerate}
+		\item Copy nodes and links to GPU device
+		\item Calculate new positions of the nodes according to the forces
+		\item Copy nodes back to host
+		\item Render nodes and links
+	\end{enumerate}
+\end{enumerate}
+
+In the main method the platform for OpenCL is selected. The platform must contain at least one GPU device, the OpenCL version 1.* is preferred over version 2.*. For the case that multiple platform with GPUs and the same major version exist there is a list of preferred manufacturers. The list is in reverse order, so from multiple platform the lower most platform is chosen:
+\begin{itemize}
+	\item Intel(R) Corporation
+	\item NVIDIA Corporation
+	\item Advanced Micro Devices, Inc.
+\end{itemize}
+If no platform is found the program aborts with -1. In the console output the found and chosen platforms will be printed.
+
+For the selected platform a context with the GPU devies is created. Then a list of GPU devies is queried from that context. For the device a command queue is created. Then the \textit{BodySolver} can be created with the context and command queue. The \textit{BodySover} calculates the new position of the nodes for each time step.
+
+For each time step the data (nodes, links) are copied to the GPU device, then the new positions are calculated, and the data is copied back to be displayed by the \textit{GLwindow} class. This is quite inefficient because for the nodes and links to be rendered they must be copied to the GPU again. It would be more efficient to use the OpenCL extension for interopability with OpenGL.
 
 \subsection{OpenGL}
 
