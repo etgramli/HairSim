@@ -15,17 +15,12 @@
 \pagenumbering{arabic}
 
 \section{Introduction}
+This is a project for the course GPU programming at HTWG Konstanz.
 
 \subsection{Project Description}
-
-
-\section{Implementation}
-
-\subsection{Architecture}
-
-\subsection{OpenCL}
-
-\subsection{OpenGL}
+This is a hair simulation that runs on the GPU.
+The hairs are made of nodes and links between them, then forces (i.e. wind, gravity) are applied to the nodes and are moved accordingly. If the links are stretched they apply a backward force to the nodes.
+The forced are applied at each time step in an OpenCL kernel.
 
 
 \section{Hair Physics}
@@ -43,7 +38,7 @@ link force \\ spring force
 \begin{figure}[htbp]
 \centering
 \fbox{
-\includegraphics[width=1.0\textwidth]{SpringForce.png}
+\includegraphics[width=0.8\linewidth]{SpringForce.png}
 }
 \caption{Spring force}
 \end{figure}
@@ -51,15 +46,53 @@ link force \\ spring force
 \begin{figure}[htbp]
 \centering
 \fbox{
-\includegraphics[width=1.0\textwidth]{CombinedForce.png}
+\includegraphics[width=0.8\linewidth]{CombinedForce.png}
 }
 \caption{Combination of all forces}
 \end{figure}
 
 
-\newpage
 \subsubsection{Wind}
 wind force \\ control direction and intensity (maximum force and interval)
+
+
+\section{Implementation}
+\subsection{Classes}
+\begin{itemize}
+	\item Vector
+	\item Node
+	\item Link
+	\item HairPiece
+	\item clHelper
+	\item BodySolver
+	\item GLwindow
+\end{itemize}
+
+\subsubsection{Vector}
+This is a class representating a vector in 3D space. It implements some operators like addition (with vector or scalar), length calculation and normalization.
+
+It is used to represent forces, movement and velocities of the nodes.
+
+\subsubsection{Node}
+It represents a node of a hair, so it has a position in 3D space, mass, velocity (as Vector class) and may be constant. If it is constant it is prevented from moving, so one side of the hair nodes can be constant so that this side is assumed to be on the surface of another object.
+
+\subsubsection{Link}
+This is a link between two nodes and so has 4 elements: one node at each side, the length and a spring constant.
+
+The Spring force is calculated with the distance from the two nodes, the difference o this length to the original link length and the spring constant.
+
+\subsubsection{HairPiece}
+\subsubsection{clHelper}
+\subsubsection{BodySolver}
+\subsubsection{GLwindow}
+
+
+
+\subsection{Architecture}
+
+\subsection{OpenCL}
+
+\subsection{OpenGL}
 
 
 \section{Conclusion}
@@ -69,6 +102,6 @@ wind force \\ control direction and intensity (maximum force and interval)
 \section{Building}
 The program can be built by importing the HairSimulation.sln in Visual Studio 2017 and then builing all sub-projects.
 
-To run the program two files must be copied: The two shaders in \verb|HairSim\OpenCLProject1\Sample\shader| (fragment.glsl and vertex.glsl) must be places in the same diretory as the executable HairSim.exe. The OpenCL kernel SolvePositionsFromLinksKernel.cl must also be present, but should be copied from Visual Stuidio while building.
+To run the program several files must be copied in the folder where the executable is located: The two shaders in \verb|HairSim\OpenCLProject1\Sample\shader| (fragment.glsl and vertex.glsl) must be places in the same diretory as the executable HairSim.exe. The OpenCL kernel SolvePositionsFromLinksKernel.cl must also be present, but should be copied from Visual Stuidio while building.
 
 \end{document}
