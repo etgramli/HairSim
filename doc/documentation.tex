@@ -122,7 +122,9 @@ If no platform is found the program aborts with -1. In the console output the fo
 
 For the selected platform a context with the GPU devies is created. Then a list of GPU devies is queried from that context. For the device a command queue is created. Then the \textit{BodySolver} can be created with the context and command queue. The \textit{BodySover} calculates the new position of the nodes for each time step.
 
-For each time step the data (nodes, links) are copied to the GPU device, then the new positions are calculated, and the data is copied back to be displayed by the \textit{GLwindow} class. This is quite inefficient because for the nodes and links to be rendered they must be copied to the GPU again. It would be more efficient to use the OpenCL extension for interopability with OpenGL.
+For each time step the data (nodes, links) are transformed to OpenCL data types and copied to the GPU device; while doing that the C++ vectors and pointers must be converted to arrays and indices. Because the nodes (coordinated and velocity) are the only volatile data, the other data (links, delta time, hairPiece) can be held in constant global memory, which increases caching usage. Then the new positions are calculated, and the data is copied back to be displayed by the \textit{GLwindow} class. This is quite inefficient because for the nodes and links to be rendered they must be copied to the GPU again. It would be more efficient to use the OpenCL extension for interopability with OpenGL.
+
+The reason to offload the calculation to the GPU is that the operations on several levels are very well supported by a GPU. First, for all the links the same operation need to be done and only the data is different, so it suits the SIMD architecture of the GPU very well. We also use extensively the vector data types and the associated functions of the OpenCL C language. So unless the C++ compiler is very clever and inlines an optimized and vectorized code the GPU version is more efficient. But with a high amount of nodes and links the GPU is faster because it can execute more links at once than a CPU.
 
 \subsection{OpenGL}
 
@@ -134,9 +136,10 @@ To run the program several files must be copied in the folder where the executab
 
 
 \section{Conclusion}
-
-
+Although exploiting the properties of GPU devices there are possible improvements to our implementation.
 An improvement would be to use the OpenCL extension for interoperation with OpenCL. This would reduce the cost of copying the nodes back and forth from and to the CPU. With the interoperability the data could reside only in the GPU's memory. The only reason to copy the data to the CPU would be to persist it to the disk.
+
+Another idea is partition the data for different Work Groups and execute them concurrently. The difficulty with this approach is that partitioning is an extensive task because there must be no shared nodes between Work Groups because shared nodes can cause race condition due to different cached versions of nodes between Work Groups. This approach must be tested with profiling to see if there is a benefit in using multiple Work Groups instead of one with all nodes.
 
 
 \end{document}
