@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1320</x>
+      <y>270</y>
+      <w>210</w>
+      <h>320</h>
+    </coordinates>
+    <panel_attributes>BodySolver
+--
+-kernelFileName: String
+-kernelName: String
+-buildArgs: String
+-hairPiece: HairPiece
+-deltaTime: float
+-deltaSeconds: float
+
+-bufferNodes: cl::Buffer
+-bufferLinks: cl::Buffer
+-bufferHairPiece: cl::Buffer
+-bufferDeltaTime: cl::Buffer
+-bufferDeltaSeconds: cl::Buffer
+-context: cl::Context
+-queue: cl::CommandQueue
+-program: cl::Program
+-kernel: cl::Kernel
+--
++getHairPiece(): HairPiece
++solveLinks(): void
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1210</x>
+      <y>850</y>
+      <w>210</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>Vector
+--
+-x: float
+-y: float
+-z: float
+--
++Vector(x: float, y: float, z: float)
++length(): float
++length2(): float
++normalize(): void
++add(Vector v): void
++getClData(): cl_Vector</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>830</x>
+      <y>820</y>
+      <w>310</w>
+      <h>210</h>
+    </coordinates>
+    <panel_attributes>Node
+--
+-x: float
+-y: float
+-z: float
+-mass: float
+-isConstant: bool
+-velocity: Vector
+--
++setPosition(x:float, y:float, z:float): void
++solveLinks(): void
++minus(b: Vector): Vector
++move(force: Vector, deltaSeconds: float): void
++getClData(): cl_Node</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>830</x>
+      <y>610</y>
+      <w>210</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>Link
+--
+-begin: Node
+-end: Node
+-length: float
+-springConstant: float
+--
++getSpringForce(): Vector
++getLinkForce(): Vector</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1130</x>
+      <y>880</y>
+      <w>100</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m2=1
+</panel_attributes>
+    <additional_attributes>10.0;20.0;80.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>920</x>
+      <y>740</y>
+      <w>40</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=2</panel_attributes>
+    <additional_attributes>10.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>840</x>
+      <y>270</y>
+      <w>410</w>
+      <h>290</h>
+    </coordinates>
+    <panel_attributes>HairPiece
+--
+-nodes: Node[]
+-links: Link[]
+-width: unsigned int
+-height: unsigned int
+-hairLength: unsigned int
+-linkLength: float
+--
++getOutgoingLinkFor(node: Node): Link
++getIngoingLinkFor(node: Node): Link
++getNextNodeFor(node: Node): Node
++getIndexOfNode(node: Node): int
++getNumberOfNodes(): int
++getNumberOfLinks(): int
++getLink(index: int): Link
++getCoordinatesForGl(): int[]
++getClData(): cl_HairPiece
++getClLinkForLink(link: Link, mapping: Map&lt;Node, int&gt;): cl_Link</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>920</x>
+      <y>550</y>
+      <w>50</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=
+m2=0..n</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1070</x>
+      <y>550</y>
+      <w>50</w>
+      <h>290</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=
+m2=0..n</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;270.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1240</x>
+      <y>340</y>
+      <w>100</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=1</panel_attributes>
+    <additional_attributes>10.0;10.0;80.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1140</x>
+      <y>720</y>
+      <w>280</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>clHelper
+--
+checkError(error: cl_int): String
+printStatus(op: String, error: cl_int): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1380</x>
+      <y>630</y>
+      <w>100</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>cl_Vector</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1520</x>
+      <y>630</y>
+      <w>100</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>cl_float3</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1470</x>
+      <y>630</y>
+      <w>70</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>50.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1460</x>
+      <y>680</y>
+      <w>160</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>cl_Node
+--
+coordinates: cl_float3
+velocity: cl_float3
+intisConst: int
+mass: cl_float</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1460</x>
+      <y>800</y>
+      <w>160</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>cl_Link
+--
+beginNodeIndex: cl_uint
+endNodeIndex: cl_uint
+springConstant: cl_float
+length: cl_float</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1460</x>
+      <y>920</y>
+      <w>160</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>cl_HairPiece
+--
+sizeX: cl_uint
+sizeY: cl_uint
+sizeZ: cl_uint
+numLinks: cl_uint
+numNodes: cl_uint</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
