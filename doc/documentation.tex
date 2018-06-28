@@ -62,16 +62,11 @@ The sumulation is implemented in C++ and OpenCL. There are classes for the neede
 The classes \textit{clHelper} and \textit{BodySolver} are the connection to OpenCL, they include simple helper functions and the simulation scheduling for the GPU. \textit{BodySolverCPU} is still present in the repository but not used; it is the CPU implementation of the simulation being used as the template for the implementation in OpenCL. The class \textit{GLwindow} contains the initialization of the window in OpenGL.
 
 \subsection{Classes}
-\begin{itemize}
-	\item Vector
-	\item Node
-	\item Link
-	\item HairPiece
-	\item clHelper
-	\item BodySolverCPU
-	\item BodySolver
-	\item GLwindow
-\end{itemize}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.8\linewidth]{Classes.pdf}
+\caption{Class diagram}
+\end{figure}
 
 \subsubsection{Vector}
 This is a class representating a vector in 3D space. It implements some operators like addition (with vector or scalar), length calculation and normalization.
@@ -114,6 +109,9 @@ To run the program several files must be copied in the folder where the executab
 
 
 \section{Conclusion}
+
+
+An improvement would be to use the OpenCL extension for interoperation with OpenCL. This would reduce the cost of copying the nodes back and forth from and to the CPU. With the interoperability the data could reside only in the GPU's memory. The only reason to copy the data to the CPU would be to persist it to the disk.
 
 
 \end{document}
