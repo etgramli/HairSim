@@ -65,4 +65,10 @@ wind force \\ control direction and intensity (maximum force and interval)
 \section{Conclusion}
 
 
+\newpage
+\section{Building}
+The program can be built by importing the HairSimulation.sln in Visual Studio 2017 and then builing all sub-projects.
+
+To run the program two files must be copied: The two shaders in \verb|HairSim\OpenCLProject1\Sample\shader| (fragment.glsl and vertex.glsl) must be places in the same diretory as the executable HairSim.exe. The OpenCL kernel SolvePositionsFromLinksKernel.cl must also be present, but should be copied from Visual Stuidio while building.
+
 \end{document}
